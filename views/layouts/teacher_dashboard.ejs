@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<title>實驗室管理系統</title>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src='https://kit.fontawesome.com/a076d05399.js'></script>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style type="text/css">
+	html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
+	a:active
+	{
+		background-color: blue;
+	}
+</style>
+<script>
+</script>
+<body class="w3-light-grey">
+	<div class="w3-bar w3-top w3-black w3-large" style="z-index:4">
+		<button class="w3-bar-item w3-button w3-hide-large w3-hover-none w3-hover-text-light-grey" onclick="w3_open();"><i class="fa fa-bars"></i>  Menu</button>
+		<span class="w3-bar-item w3-right"><a href="teacher_home.php">Dashboard</a></span>
+		<span class="w3-bar-item w3-right"><a href="../index.php">HOME</a></span>
+	</div>
+
+	<nav class="w3-sidebar w3-collapse w3-white w3-animate-left" style="z-index:3;width:300px;" id="mySidebar"><br>
+		<div class="w3-container w3-row">
+			<div class="w3-col s4">
+				<img src="/image/img_avatar3.png" class="w3-circle w3-margin-right" style="width:46px">
+			</div>
+			<div class="w3-col s8 w3-bar">
+				<span style="font-size: 16px;">Welcome, <%= name %><strong></strong></span><br>
+			</div>
+		</div>
+		<hr>
+		<div class="w3-container">
+			<h5 style="font-size: 20px;">Dashboard</h5>
+		</div>
+		<div class="w3-bar-block">
+			<a href="#" class="w3-bar-item w3-button w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black" onclick="w3_close()" title="close menu"><i class="fa fa-remove fa-fw"></i>  Close Menu</a>
+			<a href="time" style="font-size: 16px;" class="w3-bar-item w3-button w3-padding"><i class="fa fa-user fa-fw"></i>  點名系統</a>
+			<!--<a href="rol.php" style="font-size: 16px;" class="w3-bar-item w3-button w3-padding"><i class="fa fa-user fa-fw"></i>  點名系統</a>-->
+			<a href="student_manage.php" style="font-size: 16px;" class="w3-bar-item w3-button w3-padding" ><i class="fas fa-user-graduate fa-fw"></i>  學生管理系統</a>
+            <a href="student_attend.php" style="font-size: 16px;" class="w3-bar-item w3-button w3-padding" ><i class="fas fa-user-check"></i></i>  學生出席查詢</a>
+			<a href="comments.php" style="font-size: 16px;" class="w3-bar-item w3-button w3-padding"><i class="fas fa-school fa-fw"></i>  教室管理系統</a>
+			<a href="record.php" style="font-size: 16px;" class="w3-bar-item w3-button w3-padding"><i class="fa fa-history fa-fw"></i>  歷次簽到紀錄</a>
+			<a href="fqa" style="font-size: 16px;" class="w3-bar-item w3-button w3-padding"><i class="fas fa-question-circle fa-fw"></i></i>  常見問題</a>
+		</div>
+	</nav>
+	<!-- Overlay effect when opening sidebar on small screens -->
+	<div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
+
+	<!-- !PAGE CONTENT! -->
+	<div id="content" class="w3-main" style="margin-left:300px;margin-top:43px;">
+        <%- body -%>
+    </div>
+
+
+
+	
+</body>

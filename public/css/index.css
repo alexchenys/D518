@@ -1,0 +1,36 @@
+*{
+	box-sizing: border-box;;
+}
+
+.bg-img {
+/* The image used */
+	background-image: url("../bk1.jpg");
+
+	min-height: 380px;
+
+	/* Center and scale the image nicely */
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+	position: relative;
+}   
+.column {
+	float: left;
+	width: 50%;
+	padding: 10px;
+	height: 300px; /* Should be removed. Only for demonstration */
+}
+
+/* Clear floats after the columns */
+.row:after {
+	content: "";
+	display: table;
+	clear: both;
+}
+#card
+{
+	padding-top: 50px;
+	padding-bottom: 40px;
+	padding-left: 8px;
+	padding-right: 8px;
+}
