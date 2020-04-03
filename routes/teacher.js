@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const bodyParser = require('body-parser')
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
-var MongoClient = require('mongodb').MongoClient;
+var MongoClient = require('mongodb', {useUnifiedTopology: true}).MongoClient;
 var session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 var url = "mongodb://127.0.0.1:27017/lab_system";
@@ -67,8 +67,6 @@ router.post('/dashboard/rol', function(req, res){
     res.render('teacher/rol.ejs', {layout: 'layouts/teacher_dashboard.ejs', Data: teacherData})
     console.log(req.body.course_id);
 })
-router.get('/dashboard/test', function(req, res){
-    res.render('teacher/test.ejs',  {layout: 'layouts/teacher_dashboard.ejs'});
-})
+
 
 module.exports = router

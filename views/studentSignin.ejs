@@ -4,7 +4,7 @@
 	<title>實驗室管理系統</title>
 	<link href="https://fonts.googleapis.com/css?family=Noto+Sans+TC|Noto+Serif+TC&display=swap" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="css/w3.css">
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 	<style type="text/css">
 		* {
 			box-sizing: border-box;
@@ -80,7 +80,7 @@
 </head>
 <body>
 	<div class="w3-container w3-display-middle w3-animate-opacity" style="width: 80%; margin-top:50px;">
-		<form method="POST" action="record.php" name="myForm" class="w3-container w3-card-4" style="padding:30px; margin-top: 50px; background-color: white; ">
+		<form method="POST" action="/student" name="myForm" class="w3-container w3-card-4" style="padding:30px; margin-top: 50px; background-color: white; ">
 			<div class="row">
 				<div class="column w3-container">
 					<div class="tooltip"><label>姓名(Name)</label> 
@@ -92,7 +92,15 @@
 					<div class="tooltip"><label>星期</label>
 						<span class="tooltiptext">選則星期</span>
 					</div><br>
-					<select required style="width: 50%;" class="w3-select" Name="day" OnChange="Buildkey(this.selectedIndex);">
+					<!--<select required style="width: 50%;" class="w3-select" Name="day" OnChange="Buildkey(this.selectedIndex);">
+							<option value="" disabled selected >Choose your option</option>
+							<option Value="Mon">星期一</option>
+							<option Value="Tue">星期二</option>
+							<option Value="Wed">星期三</option>
+							<option Value="Thir">星期四</option>
+							<option Value="Fri">星期五</option>
+					</select>-->
+                    <select required style="width: 50%;" class="w3-select" Name="day" id="chicken">
 							<option value="" disabled selected >Choose your option</option>
 							<option Value="Mon">星期一</option>
 							<option Value="Tue">星期二</option>
@@ -115,7 +123,8 @@
 					</div><br>
 					<select required Name="class" class="w3-select" style="width: 50%;">
 						<option value="" disabled selected>Choose your option</option>
-					</Select>
+                        <option value="LaLa" >My Dick</option>
+					</select>
 				</div>
 			</div>
 			<div class="row">
@@ -178,6 +187,25 @@
 		</form>
 	</div>
 </body>
+<script type="text/javascript">
+$('#chicken').change(function(){
+    var item = $(this).val();
+    //console.log(item);
+    $.ajax({
+        url: 'dev/api',
+        type: 'GET',
+        success: (data) => {
+            //console.log(data);
+            var Json_formate = JSON.stringify(data)
+            //console.log(Json_formate);
+            console.log('ajax success!');
+            
+           //$('#status').html('All user ' + data);
+       } 
+    })
+})    
+</script>
+    
 <script type="text/javascript">
     	key=new Array(3);
 		key[0]=new Array(3);
