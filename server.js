@@ -14,7 +14,8 @@ db.once('open', () => console.log('Connected to Database'))
 const indexRouter = require('./routes/index')
 const teacherRouter = require('./routes/teacher')
 const studentRouter = require('./routes/student')
-const courseApi = require('./routes/courseapi')
+const adminRouter = require('./routes/admin')
+const apiRouter = require('./routes/REST_api')
 
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
@@ -23,7 +24,8 @@ app.use(expressLayouts)
 app.use(express.static('public'));
 
 app.use('/', indexRouter);
+app.use('/api', apiRouter);
 app.use('/teacher', teacherRouter);
 app.use('/student', studentRouter);
-app.use('/api', courseApi);
+app.use('/admin', adminRouter);
 app.listen(process.env.PORT || 3000);

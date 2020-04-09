@@ -51,21 +51,15 @@ router.post('/',urlencodedParser, function(req, res){
 router.get('/dashboard/home', function(req, res){
     var teacherData = req.session.teacherData;
     res.render('teacher/teacher_home.ejs', {layout: 'layouts/teacher_dashboard.ejs', Data: teacherData})
-    
-    //console.log('------------------我是分隔線---------------')
-    //console.log();
-    //router.set('layout', 'layouts/teacher_dashboard')
-    //res.render('teacher/teacher_dashboard.ejs')
 })
 router.get('/dashboard/rol', function(req, res){
     var teacherData = req.session.teacherData;
     res.render('teacher/rol.ejs', {layout: 'layouts/teacher_dashboard.ejs', Data: teacherData})
     //console.log(teacherData)
 })
-router.post('/dashboard/rol', function(req, res){
+router.get('/dashboard/student_manage', function(req, res){
     var teacherData = req.session.teacherData;
-    res.render('teacher/rol.ejs', {layout: 'layouts/teacher_dashboard.ejs', Data: teacherData})
-    console.log(req.body.course_id);
+    res.render('teacher/student_manage.ejs', {layout: 'layouts/teacher_dashboard.ejs', Data: teacherData})
 })
 
 

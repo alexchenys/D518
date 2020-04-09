@@ -8,22 +8,21 @@
     <script>
         $(document).ready(function(){
             $("button").click(function(){
-                $("#div1").load("test");
+                const course_id = $(this).attr("value")
+                $("#div1").append(course_id);
             });
         });
     </script>
-    
     <header class="w3-container" style="padding-top:22px">
         <h5><b><i class="icon-dashboard"></i> My Course</b></h5>
     </header>
     
     <body>
-        <div id="div1"></div>
-        <div class="w3-main">
+        <div class="w3-main" >
             <div class="w3-row-padding w3-margin-bottom w3-container">
                 <% for(var i=0; i<Data.course.length; i++) {%>
                     <div class='w3-quarter'>
-                        <button name='course_id' value="123" type='submit' style='width: 100%; margin-right:100px' class='w3-container w3-orange w3-button w3-padding-16 '>
+                        <button name='course_id' value="<%= Data.course[i][0] %>" type='submit' style='width: 100%; margin-right:100px' class='w3-container w3-orange w3-button w3-padding-16 '>
                             <div class='w3-left'><i class='fa fa-user fa-fw w3-xxxlarge'></i></div>
                             <div class='w3-right'>
                             <!--右邊數字-->
@@ -34,7 +33,7 @@
                     </div>
                 <% } %>
             </div>
-           
+            <div id="div1"></div>
         </div>
     </body>
 </html>

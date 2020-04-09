@@ -100,7 +100,7 @@
 							<option Value="Thir">星期四</option>
 							<option Value="Fri">星期五</option>
 					</select>-->
-                    <select required style="width: 50%;" class="w3-select" Name="day" id="chicken">
+                    <select required style="width: 50%;" class="w3-select" name="day" id="chicken">
 							<option value="" disabled selected >Choose your option</option>
 							<option Value="Mon">星期一</option>
 							<option Value="Tue">星期二</option>
@@ -121,7 +121,7 @@
 					<div class="tooltip"><label>課程名稱</label>
 						<span class="tooltiptext">輸入課程名稱</span>
 					</div><br>
-					<select required Name="class" class="w3-select" style="width: 50%;">
+					<select required name="class" class="w3-select" style="width: 50%;">
 						<option value="" disabled selected>Choose your option</option>
                         <option value="LaLa" >My Dick</option>
 					</select>
@@ -187,24 +187,6 @@
 		</form>
 	</div>
 </body>
-<script type="text/javascript">
-$('#chicken').change(function(){
-    var item = $(this).val();
-    //console.log(item);
-    $.ajax({
-        url: 'dev/api',
-        type: 'GET',
-        success: (data) => {
-            //console.log(data);
-            var Json_formate = JSON.stringify(data)
-            //console.log(Json_formate);
-            console.log('ajax success!');
-            
-           //$('#status').html('All user ' + data);
-       } 
-    })
-})    
-</script>
     
 <script type="text/javascript">
     	key=new Array(3);
