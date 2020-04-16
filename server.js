@@ -16,7 +16,10 @@ const teacherRouter = require('./routes/teacher')
 const studentRouter = require('./routes/student')
 const adminRouter = require('./routes/admin')
 const apiRouter = require('./routes/REST_api')
+const divRouter = require('./routes/dev')
+const path = require('path');
 
+app.use(express.static(path.resolve('./public')));
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
 app.set('layout', 'layouts/layout')
@@ -28,4 +31,5 @@ app.use('/api', apiRouter);
 app.use('/teacher', teacherRouter);
 app.use('/student', studentRouter);
 app.use('/admin', adminRouter);
+app.use('/dev', divRouter);
 app.listen(process.env.PORT || 3000);
