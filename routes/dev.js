@@ -81,4 +81,8 @@ router.post('/array', function(req, res){
     let deleteList = req.body
     console.log(deleteList.option)
 })
+
+router.get('/time',function(req, res){
+    res.render('dev/index2.ejs',{layout: 'layouts/dev_layout.ejs'})
+})
 module.exports = router

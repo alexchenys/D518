@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
+    <script src="https://momentjs.com/downloads/moment.js"></script>
+</head>
+<script>
+    $('document').ready(function(){
+        $('#time').on('change', function(){
+            var optionValue = $(this).val();
+            console.log(optionValue)
+            $.ajax({
+                url: '/api/course',
+                method: 'GET'
+            })
+            .done(function(msg){
+                console.log(msg)
+                var time = moment('13:05:00','HH:mm:ss')
+                var startTime = moment(msg[0].time1,'HH:mm:ss')
+                var afterTime = moment(msg[0].time2,'HH:mm:ss')
+                var d = new Date();
+                if (msg[0].day == '1') {
+                    if (time.isBetween(startTime, afterTime)) {
+                    console.log('is between')
+                    } else {
+                        console.log('is not between')
+                    }
+                } else {
+                    console.log('none')
+                }
+
+            })
+        })
+    })
+
+</script>
+<body>
+    <select name="" id="time">
+        <option value=''disabled selected>Choose your option</option>
+        <option value="CS0450">行動網路實務</option>
+        
+    </select>
+    
+</body>
+</html>

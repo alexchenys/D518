@@ -77,6 +77,68 @@
 			opacity: 1;
 		}
 	</style>
+	<script src="https://momentjs.com/downloads/moment.js"></script>
+	<script type="text/javascript">
+		$('document').ready(function(){
+			$("#stdId").on('change', function(){
+				var stdId = $('#stdId').val()
+
+				if (stdId != "") {
+					$('#chicken').removeAttr("disabled")
+				}
+			})
+			$( "#chicken" ).click(function(){
+				var day = $('#chicken').val()
+				$.ajax({
+					url: '/api/course',
+					method: 'GET'
+				})
+				.done(function(msg){
+					//console.log(msg.course)
+					const filterClassID = msg.filter(function(item, index, array){
+						return item.day === day;
+					});// 連動式表單
+					$('#chicken1').html("<option value=''disabled selected>Choose your option</option>")
+					for(var i=0; i<filterClassID.length; i++){
+						$('#chicken1').append("<option value="+filterClassID[i].classId+" >"+filterClassID[i].className+"</option>")
+					}
+					var stdId = $('#stdId').val()
+					$('#chicken1').on('change',function(){
+						var optionValue = $(this).val()
+						$.ajax({
+							url: '/api/course',
+							method: 'GET'
+						})
+						.done(function(msg){
+							console.log(optionValue)
+							const result = msg.find(({classId})=>classId == optionValue);
+							var d = new Date(); // day
+							console.log(result)
+							if (result.day == '1'){
+								var time = moment('13:05:00','HH:mm:ss')
+								//var time = moment()
+								var startTime = moment(msg[0].time1,'HH:mm:ss')
+								var afterTime = moment(msg[0].time2,'HH:mm:ss')
+								if (time.isBetween(startTime, afterTime)) {
+									console.log('is between')
+									$('#submit').removeAttr("disabled")
+								} else {
+									console.log('is not between')
+									$('#alert').html('<p>非上課時間</p>')
+								}
+							} else {
+								console.log('none')
+								$('#alert').html('<p style="color:red";>非上課時間</p>')
+							}
+
+						})
+						
+					})
+					
+				})
+			 })
+		})
+	</script>
 </head>
 <body>
 	<div class="w3-container w3-display-middle w3-animate-opacity" style="width: 80%; margin-top:50px;">
@@ -85,6 +147,7 @@
 				<div class="column w3-container">
 					<div class="tooltip"><label>姓名(Name)</label> 
 					<span class="tooltiptext">輸入姓名</span>
+					
 				</div>
 					<input class="w3-input" type="text" name="stu_name" style="width: 50%" required>
 				</div>
@@ -92,21 +155,13 @@
 					<div class="tooltip"><label>星期</label>
 						<span class="tooltiptext">選則星期</span>
 					</div><br>
-					<!--<select required style="width: 50%;" class="w3-select" Name="day" OnChange="Buildkey(this.selectedIndex);">
-							<option value="" disabled selected >Choose your option</option>
-							<option Value="Mon">星期一</option>
-							<option Value="Tue">星期二</option>
-							<option Value="Wed">星期三</option>
-							<option Value="Thir">星期四</option>
-							<option Value="Fri">星期五</option>
-					</select>-->
-                    <select required style="width: 50%;" class="w3-select" name="day" id="chicken">
-							<option value="" disabled selected >Choose your option</option>
-							<option Value="Mon">星期一</option>
-							<option Value="Tue">星期二</option>
-							<option Value="Wed">星期三</option>
-							<option Value="Thir">星期四</option>
-							<option Value="Fri">星期五</option>
+                    <select required style="width: 50%;" class="w3-select" name="day" id="chicken" disabled> 
+						<option value="" disabled selected >Choose your option</option>
+						<option value="1">星期一</option>
+						<option value="2">星期二</option>
+						<option value="3">星期三</option>
+						<option value="4">星期四</option>
+						<option value="5">星期五</option>
 					</select>
 				</div>
 			</div>	
@@ -115,16 +170,16 @@
 					<div class="tooltip"><label>學號(student ID)</label>
 						<span class="tooltiptext">輸入學號</span>
 					</div>
-					<input class="w3-input" type="text" name="stu_id" style="width: 50%" required>
+					<input id="stdId" class="w3-input" type="text" name="stu_id" style="width: 50%" required>
 				</div>
 				<div class="column w3-container">
 					<div class="tooltip"><label>課程名稱</label>
 						<span class="tooltiptext">輸入課程名稱</span>
 					</div><br>
-					<select required name="class" class="w3-select" style="width: 50%;">
-						<option value="" disabled selected>Choose your option</option>
-                        <option value="LaLa" >My Dick</option>
+					<select required name="class" class="w3-select" style="width: 50%;" id="chicken1">
+						
 					</select>
+					<p id="alert"></p>
 				</div>
 			</div>
 			<div class="row">
@@ -182,7 +237,7 @@
 					</div>
 				</div>
 			</div>
-			<button class="w3-button w3-green" style="margin: 10px;">簽到</button>
+			<button id="submit" class="w3-button w3-green" style="margin: 10px;" disabled>簽到</button>
             <a href="search.php" target="_blank">簽到紀錄查詢</a>
 		</form>
 	</div>

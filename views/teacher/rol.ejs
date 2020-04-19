@@ -9,12 +9,73 @@
         $(document).ready(function(){
             $("button").click(function(){
                 const course_id = $(this).attr("value")
-                $("#div1").append(course_id);
+                $("#div1").html(course_id);
             });
         });
     </script>
-  
-    
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        .column-head
+        {
+            float:left;
+            width: 5%;
+            height: 115px;
+            text-align: center;
+        }
+        .column-30
+        {
+            float: left;
+            width: 30%;
+            height: 150px;
+        }
+        .column-60
+        {
+            float: left;
+            width: 60%;
+        }
+        .column-head p
+        {
+            line-height: 1.5;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .column-path{
+            float:left;
+            width: 3%;
+            height: 115px;
+            background:none;
+        }
+        .column-seat{
+            border-radius: 10px;
+            float:left;
+            width: 14.16%;
+            height: 115px;
+            background-color: #a9a9a9; 
+            margin: 3px;
+            opacity: 8;
+        }
+        .column-seat:hover
+        {
+            background-color: darkolivegreen;
+        }
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+        .footer {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background-color: red;
+            color: white;
+            text-align: center;
+        }
+        
+    </style>
     <body>
         <header class="w3-container" style="padding-top:22px">
             <h5><b><i class="icon-dashboard"></i> My Course</b></h5>
@@ -34,7 +95,27 @@
                     </div>
                 <% } %>
             </div>
-            <div id="div1"></div>
+            <div id="div1">
+                <% for(var i=1; i<10; i++){ %> 
+                    <div class="row">
+                        <div class="column-head">
+                            <h2><%= i %> </h2>
+                        </div>
+                        <% for (var j=1; j<=6; j++) { %> 
+                            <div class="column-seat w3-card-2 w3-animate-zoom">
+                                <p style="text-align: center;"><i class="fa fa-desktop" aria-hidden="true"> </i><?php echo "  ".$pcid; ?></p>
+                                <p class="w3-text-dark-grey" style="text-align: center; opacity: 1; font-size: 15px; font-family: 'Noto Sans TC', sans-serif;"><?php echo $row1['stu_id']?></p>
+                                <p class="w3-dark-grey" style="text-align: center; opacity: 1; font-family: 'Roboto', sans-serif;"><?php echo $row1['stu_name']?></p>
+                            </div>
+                            <% if (j === 1 || j == 5) { %>
+                                <div class='column-path'>
+                                    <p>&nbsp</p>
+                                </div>
+                            <% } %>
+                        <% } %> 
+                    </div>
+                <% } %> 
+            </div>
         </div>
     </body>
 </html>

@@ -250,12 +250,6 @@
 				const filterClassID = msg.filter(function(item, index, array){
 					return item.classID === class_ID;
 				});
-				/**$('#test').html("<tr>\
-						<td><span class='custom-checkbox'><input type='checkbox' id='checkbox1' name='delete_list' value=" + filterClassID[0].stu_id + "><label for='checkbox1'></label></span></td>\
-						<td>"+ filterClassID[0].marjor +"</td>\
-						<td>"+ filterClassID[0].grade +"</td>\
-						<td>"+ filterClassID[0].stu_id +"</td>\
-						<td>"+ filterClassID[0].stu_name +"</td></tr>" );**/
 				$('#test').html('<tr></tr>');
 				for(var i=0; i<filterClassID.length; i++){
 					$('#test').append("<tr>\

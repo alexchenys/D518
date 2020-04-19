@@ -11,7 +11,7 @@ router.get('/', function(req, res){
 router.get('/course', function(req, res){
     courseInfo.find().exec()
     .then(function(course){
-        res.status(200).json({course})
+        res.status(200).json(course)
     })
     .catch(function(err){
         res.status(500).json({error: err})
