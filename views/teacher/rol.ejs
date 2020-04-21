@@ -5,13 +5,128 @@
     
     <link href="https://fonts.googleapis.com/css?family=Noto+Sans+TC|Roboto&display=swap" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://momentjs.com/downloads/moment.js"></script>
     <script>
-        $(document).ready(function(){
-            $("button").click(function(){
-                const course_id = $(this).attr("value")
-                $("#div1").html(course_id);
-            });
+    $(document).ready(function(){
+        $('#infoCard').hide()
+        $('#id1').hide()
+        $("button").click(function(){
+            const course_id = $(this).attr("value")
+            $.ajax({
+                url: '/api/course',
+                method: 'GET'
+            })
+            .done(function(msg){
+                const courseInfo = msg.filter(function(course){
+                    return course.classId === course_id
+                })
+                var format = 'HH:mm:ss'
+                var d = new Date();
+                //const day = d.getDay();
+                const day = '1'
+                const courseDay = courseInfo[0].day
+                const startTime = moment(courseInfo[0].time1, format)  
+                const endTime = moment(courseInfo[0].time2, format)
+                const currentTime = moment('13:05:00',format)
+                //const currentTime = moment()
+        
+                if (courseDay === day) {
+                    
+                    if (currentTime.isBetween(startTime, endTime)) {
+                        setInterval(Seating, 1000)
+                    }
+                } else {
+                    $('#div1').html('<h1 style="margin-left:10%">非上課時間</h1>')
+                    setInterval(update, 1000)
+                    $('#div1').append('<div style="margin-left:10%" id="clock">loading clock ...</div>')
+                }
+            })
+
+
+        $('#div1').html('')
+        function update() {
+            $('#clock').html(moment().format('D. MMMM YYYY H:mm:ss'));
+        }
+        function Seating(){
+            $.ajax({
+                url: "/api/signin",
+                method: 'GET'
+            })
+            .done(function(msg){
+                //console.log(msg)
+                $('#div1').html('')
+                var attend = msg;
+                for(var i=1; i<10; i++){
+                $('#div1').append('<div class="row">')
+                $('#div1').append("<div class='column-head'><h2>"+i+"</h2></div>")
+                    for (var j=1; j<=6; j++) {
+                        let pcId = j.toString() + "-" + i.toString()
+                        var student = msg.filter(function(person){
+                            return person.picd === pcId
+                        })
+                        //var info = student[0]
+                        if (student[0] != undefined ) {
+                            //console.log(student[0].stu_name)
+                            $('#div1').append("<div class='column-seat w3-card-2 '>\
+                                <p style='text-align: center;''><i class='fa fa-desktop' aria-hidden='true'></i>"+ pcId +"</p>\
+                                <p class='w3-text-dark-grey' style='text-align: center; opacity: 1; font-size: 15px; font-family: 'Noto Sans TC', sans-serif;'>" + student[0].stu_id + "</p>\
+                                <p class='w3-dark-grey' style='text-align: center; opacity: 1; font-family: 'Roboto', sans-serif;''>" + student[0].stu_name + "</p>\
+                            </div>")
+                        }
+                        else{
+                            $('#div1').append("<div class='column-seat w3-card-2 '>\
+                                <p style='text-align: center;''><i class='fa fa-desktop' aria-hidden='true'></i>"+ pcId +"</p>\
+                                <p class='w3-text-dark-grey' style='text-align: center; opacity: 1; font-size: 15px; font-family: 'Noto Sans TC', sans-serif;'>" + '' + "</p>\
+                                <p class='w3-dark-grey' style='text-align: center; opacity: 1; font-family: 'Roboto', sans-serif;''></p>\
+                            </div>")
+                        }
+                        if (j === 1 || j == 5) { 
+                            $('#div1').append("<div class='column-path'>\
+                                <p>&nbsp</p>\
+                                </div>")     
+                        } 
+                    }
+                } 
+                $('#div1').append('</div>')  
+                $.ajax({
+                    url: "/api/studentList",
+                    method: 'GET'
+                })
+                .done(function(msg){
+                    const list = msg.filter(function(person){
+                        return person.classID === course_id
+                    })
+                    var people = list.length;
+                    for (let i = 0; i < list.length; i++) {
+                        for (let j = 0; j < attend.length; j++) {
+                            if (list[i].stu_id === attend[j].stu_id) {
+                                console.log(i + ':' + j)
+                                list.splice(i,1)
+                            }
+                        }
+                    }
+                    $('#infoCard').show()
+                    $('#id1').show()
+                    $('#cTitle').html("<h4>"+course_id+"</h4>")
+                    $('#aWord').html("<h4 id='aWord'>應到:"+people+"員 \
+                                        實到:"+attend.length +"員</h4>")
+
+                    $('#absent').html('')
+                    for(let k=0; k<list.length; k++){
+                        $('#absent').append("<tr>\
+                                <td>"+ (k + 1) +"</td>\
+                                <td>"+ list[k].marjor +"</td>\
+                                <td>"+ list[k].grade +"</td>\
+                                <td>"+ list[k].stu_name +"</td>\
+                                <td>"+ list[k].stu_id+"</td>\
+                                </tr>")
+                    }
+                })
+            })
+
+        }
         });
+    });
     </script>
     <style>
         * {
@@ -96,25 +211,42 @@
                 <% } %>
             </div>
             <div id="div1">
-                <% for(var i=1; i<10; i++){ %> 
-                    <div class="row">
-                        <div class="column-head">
-                            <h2><%= i %> </h2>
-                        </div>
-                        <% for (var j=1; j<=6; j++) { %> 
-                            <div class="column-seat w3-card-2 w3-animate-zoom">
-                                <p style="text-align: center;"><i class="fa fa-desktop" aria-hidden="true"> </i><?php echo "  ".$pcid; ?></p>
-                                <p class="w3-text-dark-grey" style="text-align: center; opacity: 1; font-size: 15px; font-family: 'Noto Sans TC', sans-serif;"><?php echo $row1['stu_id']?></p>
-                                <p class="w3-dark-grey" style="text-align: center; opacity: 1; font-family: 'Roboto', sans-serif;"><?php echo $row1['stu_name']?></p>
-                            </div>
-                            <% if (j === 1 || j == 5) { %>
-                                <div class='column-path'>
-                                    <p>&nbsp</p>
-                                </div>
-                            <% } %>
-                        <% } %> 
+
+            </div>
+            <div id="infoCard">
+                <div class="column-head">
+                    <p>&nbsp</p>
+                </div>
+                <div class="w3-card-4 column-30">
+                    <header class="w3-container w3-blue">
+                        <h3>Info Card</h3>
+                    </header>
+                    <div class="w3-container">
+                        <h4 id="cTitle"></h4>
+                        <h4 id="aWord"></h4>
                     </div>
-                <% } %> 
+                </div>
+                <div class="column-path">
+                    <p>&nbsp</p>
+                </div>
+            </div>
+            <div id="id1" class="w3-card-4 w3-red column-60" style="margin: 0px auto;">
+                <div class="w3-red">
+                    <h3 style="text-align: center;">缺曠課人員</h3>
+                </div>
+                <table class="w3-table-all">
+                    <thead>
+                        <tr class="w3-red">
+                            <th>續號</th>
+                            <th>科系</th>
+                            <th>年級</th>
+                            <th>姓名</th>
+                            <th>學號</th>
+                        </tr>
+                    </thead>
+                    <tbody id="absent"  style="color: black;">
+                    </tbody>
+                </table>
             </div>
         </div>
     </body>

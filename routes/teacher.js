@@ -129,12 +129,13 @@ router.post('/dashboard/file', function(req, res){
                     Data: teacherData
                 })
             } else {
+                /** 
                 res.render('teacher/student_manage.ejs', {
                     layout: 'layouts/teacher_dashboard.ejs',
                     msg: 'File Uploaded!',
                     Data: teacherData
                     //file: `/uploads/${req.file.filename}`
-                })
+                })*/
                 var myData = xlsx2json.parse(`./public/uploads/${req.file.filename}`)
                 console.log(myData[0].data.length)
                 if (myData[0].data[0][0] === '科系') {
@@ -167,21 +168,31 @@ router.post('/dashboard/file', function(req, res){
                     } 
                     console.log('Removed')
                 })
+                res.redirect("student_manage");
             }
         }
     })
 })
 router.post('/dashboard/delete',urlencodedParser, function(req, res){
     let deleteList = req.body
-    //console.log(deleteList.delete_list)
-    for (let i = 0; i < deleteList.delete_list.length; i++) {
-        //const element = array[i];
-        const Dstu_id = deleteList.delete_list[i]
-        studentList.remove({stu_id: Dstu_id}).exec()
+    //console.log("id: " + deleteList.delete_list)
+    console.log(typeof deleteList.delete_list)
+    if(typeof deleteList.delete_list === "string"){
+        studentList.remove({stu_id: deleteList.delete_list}).exec()
+        res.redirect("student_manage");
+    } else {
+        for (let i = 0; i < deleteList.delete_list.length; i++) {
+            //const element = array[i];
+            const Dstu_id = deleteList.delete_list[i]
+            //console.log(Dstu_id)
+            studentList.remove({stu_id: Dstu_id}).exec()
+        }
+        res.redirect("student_manage");
     }
-    res.send('test')
+    
 })
-
-
-
+router.get('/dashboard/fqa', function(req, res){
+    var teacherData = req.session.teacherData;
+    res.render('teacher/fqa', {layout: 'layouts/teacher_dashboard.ejs', Data: teacherData})
+})
 module.exports = router

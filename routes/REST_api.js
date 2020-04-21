@@ -3,6 +3,7 @@ const router = express.Router();
 const mongoose = require('mongoose')
 const courseInfo = require('../models/classInfo')
 const studentList = require('../models/studentList')
+const studentApi = require('../models/studentApi')
 router.get('/', function(req, res){
     //res.send('Wellcome to Lab_System API')
     res.render('labApi/index.ejs', {layout: 'layouts/dev_layout.ejs'})
@@ -29,5 +30,15 @@ router.get('/studentList', function(req, res){
         res.status(500).json({error: err})
     })
 
+})
+
+router.get('/signin', function(req, res){
+    studentApi.find().exec()
+    .then(function(myList){
+        res.status(200).json(myList)
+    })
+    .catch(function(err){
+        res.status(500).json({error: err})
+    })
 })
 module.exports = router;

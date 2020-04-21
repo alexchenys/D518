@@ -33,8 +33,6 @@ router.post('/',urlencodedParser,function(req, res){
             } else {
                 console.log('404 not found')
             }
-            
-            
             db.close();
         });
       });
