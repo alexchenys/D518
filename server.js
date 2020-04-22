@@ -17,6 +17,7 @@ const studentRouter = require('./routes/student')
 const adminRouter = require('./routes/admin')
 const apiRouter = require('./routes/REST_api')
 const divRouter = require('./routes/dev')
+const newRouter = require('./routes/new')
 const path = require('path');
 
 app.use(express.static(path.resolve('./public')));
@@ -32,4 +33,6 @@ app.use('/teacher', teacherRouter);
 app.use('/student', studentRouter);
 app.use('/admin', adminRouter);
 app.use('/dev', divRouter);
+app.use('/new', newRouter);
+
 app.listen(process.env.PORT || 3000);

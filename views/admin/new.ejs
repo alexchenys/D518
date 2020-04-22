@@ -1,0 +1,88 @@
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script type="text/javascript">
+$('document').ready(function(){
+    $('#create').hide()
+    $('#check').hide()
+    $('#delete').hide()
+    $('#createB').click(function(){
+        $('#check').hide()
+        $('#delete').hide()
+        $('#create').show()
+    })
+    $('#checkB').click(function(){
+        $('#delete').hide()
+        $('#create').hide()
+        $('#check').show()
+        $.ajax({
+            url: '/api/new',
+            method: 'GET'
+        })
+        .done(function(msg){
+            $('#new').html('')
+            console.log(msg)
+            for (let i = 0; i < msg.length; i++) {
+                $('#new').append("<tr>\
+                    <td>"+"<a href='http://127.0.0.1:3000/new/"+msg[i].id +"'>"+msg[i].title+"</a>"+"</td>\
+                        <td>"+msg[i].day+"</td>\
+                    </tr>")
+            }
+        })
+    })
+    $('#deleteB').click(function(){
+        $('#create').hide()
+        $('#check').hide()
+        $('#delete').show()
+        $.ajax({
+            url: '/api/new',
+            method: 'GET'
+        })
+        .done(function(msg){
+            $('#del').html('')
+            for (let i = 0; i < msg.length; i++) {
+                $('#del').append("<option value="+msg[i].id+">"+msg[i].title+"</option>")
+            }
+        })
+    })
+})
+</script>
+<p></p>
+<button id="createB">新增貼文</button>
+<button id="checkB">查看現有貼文</button>
+<button id="deleteB">刪除貼文</button>
+<div id="create" style="margin-top: 30px;">
+    <form action="/admin/new" method="POST">
+        標題:<input type="text" name="title">
+        <br>
+        <br>
+        內容:
+        <textarea rows="10" cols="50" name="text"></textarea>
+        <br>
+        <br>
+        <input type="submit">
+    </form>
+</div>
+<div id="check"  style="margin-top: 30px;">
+    <table border="1px" style="width: 80%;">
+        <tr>
+            </a>
+            <th style="width: 85%;">標題</th>
+            <th>日期</th>
+        </tr>
+        <tbody id="new">
+        </tbody>
+        
+    </table>
+
+</div>
+<div id="delete" style="margin-top: 30px;">
+    <form action="del" method="POST">
+    <select style="width: 80%;" name="del" id="del">
+        <option value=""></option>
+    </select>
+    <br>
+    <br>
+    <br>
+    <button type="submit">送出</button>
+    </form>
+</div>

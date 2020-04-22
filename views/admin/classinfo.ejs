@@ -1,0 +1,128 @@
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+<script type="text/javascript">
+
+$('document').ready(function(){
+    $('#infoForm').hide()
+    $.ajax({
+        url: '/api/course',
+        method: 'GET'
+    })
+    .done(function(msg){
+        //console.log(msg)
+        $('#tbody').html('')
+        for (let i = 0; i < msg.length; i++) {
+            $('#tbody').append("<tr><td>"+msg[i].className+"</td><td>"+msg[i].classId+"</td><td>"+msg[i].classInstruter+"</td><td>"+msg[i].day+"</td><td>"+msg[i].time1+"</td><td>"+msg[i].time2+"</td></tr>")
+        }
+        $('#deleteClass').html('')
+        for (let i = 0; i < msg.length; i++) {
+            $('#deleteClass').append("<option value="+msg[i].classId+" >"+msg[i].className+"</option>")
+        }
+        
+    })
+
+    $('#chooseTeacher').change(function(){
+        var name = $('#chooseTeacher').val()
+        $.ajax({
+            type: 'GET',
+            url: '/api/teacher',
+            async: true,
+            dataType: "json",
+        })
+        .done(function(msg){
+            const className = msg.filter(function(qq){
+                return qq.name === name
+            })
+            var kk = className[0].course
+            $('#chooseClass').html('')
+            for (let i = 0; i < kk.length; i++) {
+                $('#chooseClass').append("<option value="+kk[i]+">"+ kk[i] +"</option>")
+            }
+            $('#chooseClass').change(function(){
+                
+                var kkk = $('#chooseClass').val()
+                var strkkk = kkk.split(',')
+                //console.log(kkk)
+                $.ajax({
+                    url: '/api/course',
+                    type: 'GET'
+                })
+                .done(function(msg){
+                    const exist = msg.filter(function(myclass){
+                        return myclass.classId === strkkk[0]
+                    })
+                    if (exist.length > 0) {
+                        $('#exist').html('<p style="color:red">課程已經建立</p>')
+                    } else {
+                        $('#exist').html('')
+                        $('#infoForm').show()
+                        $('#infoForm').append("<input type='text' style='display: none' name='classInstruter' value="+className[0].name+">")
+                        $('#infoForm').append("<input type='text' style='display: none' name='classId' value="+strkkk[0]+">")
+                        $('#infoForm').append("<input type='text' style='display: none' name='className' value="+strkkk[1]+">") 
+                    }      
+                })
+            })
+        })
+    })
+})
+</script>
+<div class="w3-container">
+    <h2>D518的課程</h2>
+    <h4>現有資料</h4>
+    <table class="w3-table w3-bordered">
+        <tr>
+            <th>課名</th>
+            <th>課號</th>
+            <th>授課老師</th>
+            <th>星期</th>
+            <th>開始時間</th>
+            <th>結束時間</th>
+        </tr>
+        <tbody id="tbody">
+        </tbody>
+    </table>
+    <br>
+    <br>
+    <h4>新增課程</h4>
+    <select class="w3-select" name="option" id="chooseTeacher">
+        <option value="" disabled selected>選擇老師姓名</option>
+        <% for(var i=0; i<data.length; i++){ %>
+        <option value=<%=data[i].name%>><%=data[i].name %></option>
+        <% } %>
+    </select>
+    <select class="w3-select" name="option" id="chooseClass">
+        <option value="" disabled selected>選擇課程</option>
+    </select>
+    <p id="exist"></p>
+    <div style="margin-top: 30px;" >
+        <form class="w3-container" id="infoForm" method="POST" action="/admin/addinfo">
+            <label>星期</label>
+            <select class="w3-select" name="day">
+                <option value="1">星期一</option>
+                <option value="2">星期二</option>
+                <option value="3">星期三</option>
+                <option value="4">星期四</option>
+                <option value="5">星期五</option>
+            </select>
+            <label>開始時間(24小時制)</label>
+            <input class="w3-input" type="text" placeholder="15:00:00" name="time1">
+            <label>結束時間(24小時制)</label>
+            <input class="w3-input" type="text" placeholder="18:00:00" name="time2">
+            <p></p>
+            <button class="w3-button w3-black" type="submit">送出</button>
+        </form>
+    </div>
+    <h4>更改課程</h4>
+    <li>刪除課程</li>
+    <form action="/admin/deletecourse"  method="POST">
+        <select class="w3-select" name="deleteId" id="deleteClass">
+            <option value="" disabled selected>選擇課程</option>
+        </select>
+        <p></p>
+        <button class="w3-button w3-black" type="submit">送出</button>
+    </form>
+    
+
+</div>
+  

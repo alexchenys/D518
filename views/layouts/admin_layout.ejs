@@ -1,0 +1,152 @@
+<!doctype html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>實驗室管理系統</title>
+    <style>
+    @import url(http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css);
+    body{margin-top:20px;}
+    .fa-fw {width: 2em;}
+    body {
+        font-family: "Lato", sans-serif;
+    }
+
+    /* Fixed sidenav, full height */
+    .sidenav {
+        height: 100%;
+        width: 200px;
+        position: fixed;
+        z-index: 1;
+        top: 0;
+        left: 0;
+        background-color: #111;
+        overflow-x: hidden;
+        padding-top: 20px;
+    }
+
+    /* Style the sidenav links and the dropdown button */
+    .sidenav a, .dropdown-btn {
+        padding: 6px 8px 6px 16px;
+        text-decoration: none;
+        font-size: 20px;
+        color: #818181;
+        display: block;
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: left;
+        cursor: pointer;
+        outline: none;
+    }
+
+    /* On mouse-over */
+    .sidenav a:hover, .dropdown-btn:hover {
+        color: #f1f1f1;
+    }
+
+    /* Main content */
+    .main {
+        margin-left: 200px; /* Same as the width of the sidenav */
+        font-size: 20px; /* Increased text to enable scrolling */
+        padding: 0px 10px;
+    }
+
+    /* Add an active class to the active dropdown button */
+    .active {
+        background-color: green;
+        color: white;
+    }
+
+    /* Dropdown container (hidden by default). Optional: add a lighter background color and some left padding to change the design of the dropdown content */
+    .dropdown-container {
+        display: none;
+        background-color: #262626;
+        padding-left: 8px;
+    }
+
+    /* Optional: Style the caret down icon */
+    .fa-caret-down {
+        float: right;
+        padding-right: 8px;
+    }
+
+    /* Some media queries for responsiveness */
+    @media screen and (max-height: 450px) {
+        .sidenav {padding-top: 15px;}
+        .sidenav a {font-size: 18px;}
+    }
+    .avatar {
+        vertical-align: middle;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin-left: 15px;
+    }
+    </style>
+</head>
+<body>
+    <div class="w3-bar w3-top w3-black w3-large" style="z-index:4">
+        <button class="w3-bar-item w3-button w3-hide-large w3-hover-none w3-hover-text-light-grey" onclick="w3_open();"><i class="fa fa-bars"></i>  Menu</button>
+        <span class="w3-bar-item w3-right"><a href="/" style="color: white;">HOME</a></span>
+    </div>
+    <!------ Include the above in your HEAD tag ---------->
+
+    <div class="w3-container" >
+
+        <div class="sidenav" style="margin-top: 41px;">
+            <img src="/image/img_avatar3.png" alt="Avatar" class="avatar"><label style="font-size: 20px; margin-left: 10px; color: white">Admin</label>
+            <a href="home">Dashboard</a>
+            <button class="dropdown-btn">老師管理系統
+                <i class="fa fa-caret-down"></i>
+            </button>
+            <div class="dropdown-container">
+                <a href="info">建立老師帳號資訊</a>
+                <a href="classinfo">課程資訊</a>
+            </div>
+            <button class="dropdown-btn">教室管理系統
+                <i class="fa fa-caret-down"></i>
+            </button>
+            <div class="dropdown-container">
+                <a href="#">損壞設備填寫</a>
+                <a href="#">紀錄表</a>
+                <a href="record_search.php" target="_blank">列印，查詢簽到記錄</a>
+            </div>
+            <button class="dropdown-btn">系統管理
+                <i class="fa fa-caret-down"></i>
+            </button>
+            <div class="dropdown-container">
+                <a href="log.php">Log 查詢</a>
+                <a href="backup.php">系統備份</a>
+                <a href="new">公佈欄</a>
+            </div>
+           
+        </div>
+        <div style="margin-left: 200px; margin-top: 41px;">
+            <%- body -%>
+        </div>
+        <script>
+            /* Loop through all dropdown buttons to toggle between hiding and showing its dropdown content - This allows the user to have multiple dropdowns without any conflict */
+            var dropdown = document.getElementsByClassName("dropdown-btn");
+            var i;
+            
+            for (i = 0; i < dropdown.length; i++) {
+                dropdown[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                var dropdownContent = this.nextElementSibling;
+                if (dropdownContent.style.display === "block") {
+                dropdownContent.style.display = "none";
+                } else {
+                dropdownContent.style.display = "block";
+                }
+                });
+            }
+        </script>
+    </div>
+

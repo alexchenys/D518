@@ -1,0 +1,30 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script type="text/javascript">
+$('document').ready(function(){
+    $.ajax({
+        url: '/api/new',
+        method: 'GET'
+    })
+    .done(function(msg){
+        $('#new').html('')
+        console.log(msg)
+        for (let i = 0; i < msg.length; i++) {
+            $('#new').append("<tr>\
+                <td>"+"<a href='http://127.0.0.1:3000/new/"+msg[i].id +"'>"+msg[i].title+"</a>"+"</td>\
+                    <td>"+msg[i].day+"</td>\
+                </tr>")
+        }
+    })
+})
+
+</script>
+<div class="w3-container">
+    <p></p>
+    <table class="w3-table w3-bordered">
+        <tr class="w3-blue">
+            <th style="width: 85%;">標題</th>
+            <th>日期</th>
+        </tr>
+        <tbody id="new"></tbody>
+    </table>
+</div>

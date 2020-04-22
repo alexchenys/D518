@@ -100,7 +100,7 @@
                     for (let i = 0; i < list.length; i++) {
                         for (let j = 0; j < attend.length; j++) {
                             if (list[i].stu_id === attend[j].stu_id) {
-                                console.log(i + ':' + j)
+                                //console.log(i + ':' + j)
                                 list.splice(i,1)
                             }
                         }
@@ -108,6 +108,7 @@
                     $('#infoCard').show()
                     $('#id1').show()
                     $('#cTitle').html("<h4>"+course_id+"</h4>")
+                    console.log(course_id)
                     $('#aWord').html("<h4 id='aWord'>應到:"+people+"員 \
                                         實到:"+attend.length +"員</h4>")
 

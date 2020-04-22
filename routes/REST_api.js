@@ -4,6 +4,9 @@ const mongoose = require('mongoose')
 const courseInfo = require('../models/classInfo')
 const studentList = require('../models/studentList')
 const studentApi = require('../models/studentApi')
+const newsApi = require('../models/new')
+var MongoClient = require('mongodb').MongoClient;
+var url = "mongodb://127.0.0.1:27017/lab_system";
 router.get('/', function(req, res){
     //res.send('Wellcome to Lab_System API')
     res.render('labApi/index.ejs', {layout: 'layouts/dev_layout.ejs'})
@@ -41,4 +44,28 @@ router.get('/signin', function(req, res){
         res.status(500).json({error: err})
     })
 })
-module.exports = router;
+
+router.get("/teacher", (req, res) => {
+    MongoClient.connect(url, function(err, db) {
+        if (err) throw err;
+        var dbo = db.db("lab_system");
+        dbo.collection("teacher").find({}).toArray(function(err, result) {
+            if (err) throw err;
+            console.log(result)
+            res.send(result)
+
+            db.close();
+        });
+    });
+});
+
+router.get('/new', function(req, res){
+    newsApi.find().exec()
+    .then(function(myList){
+        res.status(200).json(myList)
+    })
+    .catch(function(err){
+        res.status(500).json({error: err})
+    })
+})
+module.exports = router
