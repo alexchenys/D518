@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>簽到表</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        p{
+            margin: 0px; 
+            font-size: 17px; 
+            letter-spacing: 2px;
+        }
+        .column25 {
+            float: left;
+            width: 25%;
+            padding: 10px;
+            height: 35px; /* Should be removed. Only for demonstration */
+        }
+        .column50 {
+            float: left;
+            width: 50%;
+            padding: 10px;
+            height: 35px; /* Should be removed. Only for demonstration */
+        }
+        .column15 {
+            float: left;
+            width: 15%;
+            padding: 0px;
+            height: 35px;
+        }
+        .column16 {
+            float: left;
+            width: 16.666666666666666666666%;
+            padding: 0px;
+            height: ˙35px;
+        }
+        .column333{
+            float: left;
+            width: 3.33%;
+            height: 35px;
+        }
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+        table{
+            border-style:solid; 
+            border-width: 1px;
+            width: 100%;
+            border-collapse: collapse;
+            float: left;
+        }
+        td, th {
+            border-style:solid; 
+            border-width: 1px;
+            border-collapse: collapse;
+        }
+        tr {
+            height: 25px;
+        }
+    </style>
+    <script type="text/javascript">
+    $('document').ready(function(){
+        var id = $('#classId').val()
+        var date = $('#date').val()
+        var dateArr = date.split('/')
+        $.ajax({
+            url: '/api/course',
+            method: 'GET'
+        })
+        .done(function(msg){
+            const thisClass = msg.filter(function(myClass){
+                return myClass.classId === id.trim()
+            })
+            $.ajax({
+                url: '/api/signin',
+                method: 'GET'
+            })
+            .done(function(apple){
+                const thisPeople = apple.filter(function(people){
+                    return people.date === date.trim() && people.class === id.trim()
+                })
+                console.log(thisPeople)
+                $('#myTitle').append("<p><u><strong>第學年度第"+thisClass[0].year+"學期"+thisClass[0].className+"課程與設備使用紀錄表</strong></u></p>")
+                $('#myTitle').append("<p style='margin-top:10px;''>上課班級：日四技"+thisClass[0].grade+"</p>")
+                $('#myTitle').append("<p>上課日期：<u>"+dateArr[2]+"</u>年<u>"+dateArr[0]+"</u>月<u>"+dateArr[1]+"</u>日(星期<u><?php echo $row['day']; ?></u>)第<u>"+thisClass[0].uu[0]+"</u>節至第<u>"+thisClass[0].uu[1]+"</u></p>")
+                $('#pTest').text("教師位置 授課老師: " + thisClass[0].classInstruter)
+                for (let i = 1; i <= 6; i++) {
+                    for (let j = 1; j <= 10; j++) {
+                        var pcid = $("#"+i+"-"+j).text()
+                        //console.log(pcid)
+                        for (let k = 0; k < thisPeople.length; k++) {
+                            console.log("pcid = " + pcid + '; pa = '+ thisPeople[k].picd)
+                            if (thisPeople[k].picd.trim() === pcid.trim()) {
+                                //console.log('trigger')
+                                $("#"+i+"-"+j+'1').text(thisPeople[k].stu_id)
+                                $("#"+i+"-"+j+'2').text(thisPeople[k].stu_name)
+                                break;
+                            } else{
+                                $("#"+i+"-"+j+'1').text("")
+                                $("#"+i+"-"+j+'2').text("")
+                            }
+
+                        }
+                    }
+                }
+            })
+            
+            console.log()
+        
+            
+        })
+    })
+    </script>
+</head>
+<body>
+    <input type="text" style="display: none;" id="classId" value="<%=id%> ">
+    <input type="text" style="display: none;" id="date" value="<%=date%> ">
+    <div class=" w3-container">
+        <div class=" w3-center" id="myTitle"><!--title-->
+            <p><u><strong>健行科技大學 資訊工程系</strong> 資訊安全 <strong>實驗室</strong></u></p>
+        </div><!--title_end-->
+        <div class=" row" style="margin-top: 5px;"><!--door and teacher name-->
+            <div class=" column25 w3-display-container">
+                <div class=" w3-display-topleft">
+                    <p class=" w3-center" style="background-color: gray; border-style:solid; border-width: 2px; letter-spacing: 15px;">門口</p>
+                </div>
+            </div>
+            <div class=" w3-display-container column50" style="padding: 3px; border-style:solid; border-width: 2px; overflow: auto;">
+                <p id="pTest" class=" w3-display-left" style="font-size: 15px;"></p>
+            </div>
+            <div class=" column25">
+                <p></p>
+            </div>
+        </div><!--door and teacher name_end-->
+        <div style=" margin-top : 20px;">
+            <p></p>
+        </div>
+        <% for(var j=1; j<=10; j++){ %> 
+            <div class="row" style="overflow: auto; height:80px;">
+            <% for (var i=1; i <= 6; i++) {  %> 
+                <div class='column15'>
+                    <div class=" w3-display-container" style="height: 25px; border-style:solid; border-width: 1px">
+                        <p id="<%= i+'-'+j %>" class=" w3-display-middle" ><%= i+'-'+j %> </p>
+                    </div>
+                    <div style=" height: 55px; border-style:solid; border-width: 1px ;overflow: auto; padding: 1px;">
+                        <p id="<%= i+'-'+j +'1'%>" style="font-size: 11px; text-align: center;">d10821040</p>
+                        <p id="<%= i+'-'+j +'2'%>" style="text-align: center;">陳禹璿</p>
+                    </div>
+                </div>
+                <% if (i === 1 || i === 3 || i === 5) { %> 
+                    <div class='column333'>
+                        <% if (j === 4) { %>  
+                            <p class='w3-center'>走</p>
+                        <% } %>
+                        <% if (j === 8) { %>  
+                            <p class='w3-center'>道</p>
+                        <% } %> 
+                        </div>
+                <% } %> 
+            <% } %> 
+            </div>
+        <% } %> 
+        <div style="margin-top: 180px;">
+            <p></p>
+        </div>
+        <p><strong>使用異常狀況填報:</strong></p>
+        <table>
+            <tr><th>設備名稱</th><th>財產編號</th><th>異常說明</th><th>處理狀況</th></tr>
+            <tr><td></td><td></td><td></td><td></td></tr>
+            <tr><td></td><td></td><td></td><td></td></tr>
+            <tr><td></td><td></td><td></td><td></td></tr>
+            <tr><td></td><td></td><td></td><td></td></tr>
+        </table>
+        <div style="margin-top: 180px;">
+            <p></p>
+        </div>
+        <table>
+            <td style="width: 16.66%;">值日生簽名:</td><td style="width: 16.66%;"></td>
+            <td style="width: 16.66%;">維護人員簽名:</td><td style="width: 16.66%;"></td>
+            <td style="width: 16.66%;">管理老師簽名:</td><td style="width: 16.66%;"></td>
+        </table>
+        <div style="margin-top: 180px;">
+            <p></p>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+        </div>
+    </div>

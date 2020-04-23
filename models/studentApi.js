@@ -6,7 +6,7 @@ const studentSchema = mongoose.Schema({
     day: {type: String, required: true},
     class: {type: String, required: true},
     picd : {type: String, required: true},
-    date: { type: Date, default: Date.now }
+    date: { type: String, required: true }
 })
 
 module.exports = mongoose.model('stuSignIn', studentSchema);

@@ -7,13 +7,14 @@ var xlsx2json = require("node-xlsx");
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 var MongoClient = require('mongodb', {useUnifiedTopology: true}).MongoClient;
 var session = require('express-session');
+var moment = require('moment');
 const MongoStore = require('connect-mongo')(session);
 const mongoose = require('mongoose')
 const fs = require('fs')
 
 var url = "mongodb://127.0.0.1:27017/lab_system";
 const studentList = require('../models/studentList.js')
-
+const studentApi = require('../models/studentApi')
 const storage = multer.diskStorage({
     destination: './public/uploads/',
     filename: function(req, file, cb){
@@ -194,5 +195,21 @@ router.post('/dashboard/delete',urlencodedParser, function(req, res){
 router.get('/dashboard/fqa', function(req, res){
     var teacherData = req.session.teacherData;
     res.render('teacher/fqa', {layout: 'layouts/teacher_dashboard.ejs', Data: teacherData})
+})
+router.get('/dashboard/record', function(req, res){
+    var teacherData = req.session.teacherData;
+    res.render('teacher/record', {layout: 'layouts/teacher_dashboard.ejs', Data: teacherData})
+})
+router.post('/dashboard/print',urlencodedParser,function(req, res){
+    
+    var courseId =  req.body.courseId
+    //console.log(req.body)
+    var mydate =  req.body.date
+    studentApi.find({class:courseId, date:mydate}).exec()
+    .then(function(myList){
+        console.log(myList);
+        res.render('teacher/print', {layout: 'layouts/dev_layout', list:myList, id:courseId, date:mydate})
+    })
+    
 })
 module.exports = router

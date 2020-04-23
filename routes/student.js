@@ -4,6 +4,7 @@ const bodyParser = require('body-parser')
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 const mongoose = require('mongoose')
 var url = "mongodb://127.0.0.1:27017/lab_system";
+var moment = require('moment');
 var MongoClient = require('mongodb', {useUnifiedTopology: true}).MongoClient;
 const stuSignIn = require('../models/studentApi.js')
 
@@ -17,6 +18,7 @@ router.post('/',urlencodedParser,function(req, res){
         stu_name: req.body.stu_name,
         stu_id: req.body.stu_id,
         day: req.body.day,
+        date: moment().format('L'),
         class: req.body.class,
         picd : req.body.pcid_1 + "-" + req.body.pcid_2
     });
