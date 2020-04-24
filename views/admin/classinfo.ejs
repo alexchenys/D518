@@ -105,10 +105,21 @@ $('document').ready(function(){
                 <option value="4">星期四</option>
                 <option value="5">星期五</option>
             </select>
+            <select class="w3-select" name="year" id="">
+                <option value="1">第一學年</option>
+                <option value="2">第二學年</option>
+            </select>
             <label>開始時間(24小時制)</label>
             <input class="w3-input" type="text" placeholder="15:00:00" name="time1">
             <label>結束時間(24小時制)</label>
             <input class="w3-input" type="text" placeholder="18:00:00" name="time2">
+            <p></p>
+            <label>開始節數</label>
+            <input class="w3-input" type="text" placeholder="ㄧ" name="class1"">
+            <label>結束節數</label>
+            <input class="w3-input" type="text" placeholder="三" name="class2">
+            <label>上課年級</label>
+            <input class="w3-input" type="text" placeholder="3年甲班" name="grade">
             <p></p>
             <button class="w3-button w3-black" type="submit">送出</button>
         </form>

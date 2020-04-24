@@ -6,7 +6,13 @@ const path = require('path')
 const fs = require('fs')
 const iconv = require('iconv-lite');
 var xlsx2json = require("node-xlsx");
-
+var sys = require('sys');
+//var node_fs = require('node-fs');
+const { exec } = require("child_process");
+var date=new Date().getDate();
+var month=new Date().getMonth();
+var year=new Date().getFullYear();
+var output='./public/backup/';
 const storage = multer.diskStorage({
     destination: './public/uploads/',
     filename: function(req, file, cb){
@@ -30,11 +36,9 @@ const uploads = multer({
         }
     }
 }).single('myFile')
-
 router.get('/', function(req, res){
     res.render('dev/index1', {layout: 'layouts/dev_layout.ejs'})
 })
-
 router.post('/upload', function(req, res){
     uploads(req, res, (err) => {
         console.log(req.body.classID)
@@ -69,20 +73,23 @@ router.post('/upload', function(req, res){
 
     })
 })
-
 router.get('/csv',function(req, res){
     res.send('test')
     var list = xlsx2json.parse("./public/uploads/CS0169.xlsx" );
     
 })
-
 router.post('/array', function(req, res){
     res.send('good')
     let deleteList = req.body
     console.log(deleteList.option)
 })
-
 router.get('/time',function(req, res){
     res.render('dev/index2.ejs',{layout: 'layouts/dev_layout.ejs'})
+})
+router.get('/backup', async function(req, res){
+    exec('mongodump --db lab_system --out '+output+year + '-' + month + '-' + date, function (err, res) {
+        //console.log(res)
+        console.log('Dump taken on '+ year+'-'+month+'-'+date)
+    })
 })
 module.exports = router

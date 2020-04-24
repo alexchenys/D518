@@ -31,11 +31,14 @@
                 //const currentTime = moment()
         
                 if (courseDay === day) {
-                    
+                    console.log('trigger')
                     if (currentTime.isBetween(startTime, endTime)) {
-                        setInterval(Seating, 1000)
+                        setInterval(Seating(1), 1000)
                     }
                 } else {
+                    Seating(0)
+                    $('#infoCard').hide('')
+                    $('#id1').hide('')
                     $('#div1').html('<h1 style="margin-left:10%">非上課時間</h1>')
                     setInterval(update, 1000)
                     $('#div1').append('<div style="margin-left:10%" id="clock">loading clock ...</div>')
@@ -47,7 +50,10 @@
         function update() {
             $('#clock').html(moment().format('D. MMMM YYYY H:mm:ss'));
         }
-        function Seating(){
+        function Seating(node){
+            if (node === 0) {
+                return
+            }
             $.ajax({
                 url: "/api/signin",
                 method: 'GET'
@@ -95,25 +101,33 @@
                 .done(function(msg){
                     const list = msg.filter(function(person){
                         return person.classID === course_id
-                    })
+                    })              
                     var people = list.length;
+                   
                     for (let i = 0; i < list.length; i++) {
+                      
                         for (let j = 0; j < attend.length; j++) {
+                            //console.log(list[i].stu_id + ':' + attend[j].stu_id)
                             if (list[i].stu_id === attend[j].stu_id) {
-                                //console.log(i + ':' + j)
-                                list.splice(i,1)
+                                
+                                list.splice(i,1,{})
+                                break;
                             }
                         }
                     }
                     $('#infoCard').show()
                     $('#id1').show()
                     $('#cTitle').html("<h4>"+course_id+"</h4>")
-                    console.log(course_id)
+                    //console.log(course_id)
                     $('#aWord').html("<h4 id='aWord'>應到:"+people+"員 \
                                         實到:"+attend.length +"員</h4>")
 
                     $('#absent').html('')
                     for(let k=0; k<list.length; k++){
+                        var size = Object.keys(list[k]).length;
+                        if (size === 0) {
+                            break
+                        }
                         $('#absent').append("<tr>\
                                 <td>"+ (k + 1) +"</td>\
                                 <td>"+ list[k].marjor +"</td>\

@@ -9,6 +9,14 @@ var url = "mongodb://127.0.0.1:27017/lab_system";
 const classInfo = require('../models/classInfo.js')
 const studentList = require('../models/studentList.js')
 const news = require('../models/new.js');
+const studentApi = require('../models/studentApi')
+const mylog = require('../models/log')
+var sys = require('sys');
+const { exec } = require("child_process");
+var date=new Date().getDate();
+var month=new Date().getMonth();
+var year=new Date().getFullYear();
+var output='./public/backup/';
 function getRandomInt(max) {
     return Math.floor(Math.random() * Math.floor(max));
 }
@@ -17,8 +25,29 @@ router.get('/',function(req, res){
     res.render('admin/login',{layout: 'layouts/dev_layout.ejs'})
 })
 router.post('/', urlencodedParser, function(req, res){
+    const log = new mylog({
+        _id: new mongoose.Types.ObjectId(),
+        date: moment().format('L'),
+        time: moment().format('LTS'),
+        username: req.body.username,
+        ip: req.connection.remoteAddress,
+        status: 'success',
+    })
     if (req.body.username === 'admin' && req.body.password === '123') {
+        console.log('trigger')
+        log.save().catch(err=>console.log(err))
         res.redirect('admin/dashboard/home')
+    } else {
+        const logF = new mylog({
+            _id: new mongoose.Types.ObjectId(),
+            date: moment().format('L'),
+            time: moment().format('LTS'),
+            username: req.body.username,
+            ip: req.connection.remoteAddress,
+            status: 'fault',
+        })
+        logF.save().catch(err=>console.log(err))
+        res.redirect('admin')
     }
 })
 router.get('/dashboard/home', function(req, res){
@@ -77,13 +106,17 @@ router.post('/studentList', urlencodedParser, function(req, res){
 })
 router.post('/addinfo',urlencodedParser, function(req, res){
     
-    console.log('trigger');
+    console.log(req.body.class2);
     const class_info = new classInfo({
         _id: new mongoose.Types.ObjectId(),
         classId: req.body.classId,
         className: req.body.className,
         classInstruter: req.body.classInstruter,
         day: req.body.day,
+        year: req.body.year,
+        class1: req.body.class1,
+        class2: req.body.class2,
+        grade: req.body.grade,
         time1: req.body.time1,
         time2: req.body.time2
     })
@@ -114,7 +147,30 @@ router.post('/dashboard/del', function(req, res){
     news.remove({id:req.body.del}).exec()
     res.render('admin/new',{layout: 'layouts/admin_layout.ejs'})
 })
-
-
-
+router.get('/dashboard/record_search', function(req, res){
+    res.render('admin/record_search',{layout: 'layouts/admin_layout.ejs'})
+})
+router.post('/dashboard/record', function(req, res){
+    var courseId =  req.body.courseId
+    var mydate =  req.body.date
+    studentApi.find({class:courseId, date:mydate}).exec()
+    .then(function(myList){
+        //console.log(myList);
+        res.render('admin/print', {layout: 'layouts/dev_layout', list:myList, id:courseId, date:mydate})
+    })
+})
+router.get('/dashboard/log', function(req, res){
+    res.render('admin/log', {layout: 'layouts/admin_layout.ejs'})
+    //console.log(req.connection.remoteAddress)
+})
+router.get('/dashboard/backup', function(req, res){
+    res.render('admin/backup', {layout: 'layouts/admin_layout.ejs'})
+})
+router.post('/backup', function(req, res){
+    exec('mongodump --db lab_system --out '+output+year + '-' + month + '-' + date, function (err, res) {
+        //console.log(res)
+        console.log('Dump taken on '+ year+'-'+month+'-'+date)
+    })
+    res.redirect('dashboard/backup')
+})
 module.exports = router

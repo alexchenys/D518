@@ -177,7 +177,7 @@ router.post('/dashboard/file', function(req, res){
 router.post('/dashboard/delete',urlencodedParser, function(req, res){
     let deleteList = req.body
     //console.log("id: " + deleteList.delete_list)
-    console.log(typeof deleteList.delete_list)
+    //console.log(typeof deleteList.delete_list)
     if(typeof deleteList.delete_list === "string"){
         studentList.remove({stu_id: deleteList.delete_list}).exec()
         res.redirect("student_manage");
@@ -207,7 +207,7 @@ router.post('/dashboard/print',urlencodedParser,function(req, res){
     var mydate =  req.body.date
     studentApi.find({class:courseId, date:mydate}).exec()
     .then(function(myList){
-        console.log(myList);
+        //console.log(myList);
         res.render('teacher/print', {layout: 'layouts/dev_layout', list:myList, id:courseId, date:mydate})
     })
     

@@ -1,0 +1,96 @@
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+$('document').ready(function(){
+    $('#date1').hide()
+    $.ajax({
+        url: '/api/log',
+        method: 'GET'
+    })
+    .done(function(msg){
+        var listFilter = Object.values(msg).map(item => item.date)
+        var uniqeList = [...new Set(listFilter)]
+        $('#date').html("<option disabled selected>Choose your option</option>")
+        for (let j = 0; j < uniqeList.length; j++) {
+            $('#date').append("<option value="+uniqeList[j]+">"+uniqeList[j]+"</option>")  
+        }
+        
+        $('#log').html('')
+        if (msg.length <= 5) {
+            var control = 0
+        } else if (msg.length >= 5) {
+            var control = msg.length - 5
+        }
+        for (let i = msg.length-1; i >= control; i--) {
+            $('#log').append("<tr><td>"+msg[i].date+"</td><td>"+msg[i].time+"</td><td>"+msg[i].username+"</td>\
+                            <td>"+msg[i].date+"</td><td>"+msg[i].status+"</td><td>"+msg[i].ip+"</td></tr>")
+        }
+        $('#date').change(function(){
+            var date = $('#date').val()
+            const datefilter = msg.filter(function(ll){
+                return ll.date === date
+            })
+            console.log(datefilter[0])
+            $('#date1').show()
+            $('#log1').html("")
+            for (let j = 0; j < datefilter.length; j++) {
+                $('#log1').append("<tr><td>"+datefilter[j].date+"</td><td>"+datefilter[j].time+"</td><td>"+datefilter[j].username+"</td>\
+                            <td>"+datefilter[j].date+"</td><td>"+datefilter[j].status+"</td><td>"+datefilter[j].ip+"</td></tr>")
+            }
+        })
+    })
+})
+
+</script>
+<div class="container main" style="margin-top: 50px;">
+    <h2>Log table</h2>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>日期</th>
+            <th>時間</th>
+            <th>姓名</th>
+            <th>動作</th>
+            <th>狀態</th>
+            <th>ip</th>
+        </tr>
+        </thead>
+        <tbody id="log">
+        <tr>
+            
+        </tr>
+        </tbody>
+    </table>
+
+    <h2>Log search</h2>
+    <select class="w3-select w3-border" name="date" id='date' required>
+        <option value="" disabled selected>Choose your option</option>
+    </select>
+    <table class="table table-striped" id="date1">
+        <thead>
+            <tr>
+                <th>日期</th>
+                <th>時間</th>
+                <th>姓名</th>
+                <th>動作</th>
+                <th>狀態</th>
+                <th>ip</th>
+            </tr>
+        </thead>
+        <tbody id="log1">
+            <tr>
+                
+            </tr>
+        </tbody>
+    <table>
+</div>
+
+</div>
+

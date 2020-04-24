@@ -1,0 +1,48 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<script type="text/javascript">
+$('document').ready(function(){
+    $('#class1').html("<option value='' disabled selected>Choose your option</option>")
+    
+    $.ajax({
+        url: '/api/course',
+        method: 'GET'
+    })
+    .done(function(msg){
+        for (let i = 0; i < msg.length; i++) {
+            $('#class1').append("<option value="+msg[i].classId+" >"+msg[i].className+"</option>")
+        }
+        $.ajax({
+            url: '/api/signin',
+            method: 'GET'
+        })
+        .done(function(msg){
+            $('#class1').change(function(){
+                var className =  $('#class1').val()
+                const classA = msg.filter(function(myStudent){
+                    return myStudent.class === className
+                })
+                $('#class2').html("<option value='' disabled selected>Choose your option</option>")
+                var listFilter = Object.values(classA).map(item => item.date)
+                var uniqeList = [...new Set(listFilter)]
+                for (let i = 0; i < uniqeList.length; i++) {
+                    $('#class2').append("<option value="+uniqeList[i]+">"+uniqeList[i]+"</option>")
+                }
+            })
+        })
+    })
+})
+</script>
+<form class="w3-container" method="POST" action="record" style="margin-top: 10%; width: 40%;" target="_blank">
+    <p></p>
+    <select class="w3-select w3-border" name="courseId" id='class1' required>
+        <option value="" disabled selected>Choose your option</option>
+    </select>
+    <p></p>
+    <p></p>
+    <select class="w3-select w3-border" name="date" id='class2' required>
+        <option value="" disabled selected>Choose your option</option>
+    </select>
+    <p></p>
+    <button style="margin-top: 10px;" class="w3-button w3-black" type="submit">確認</button>
+</form>
