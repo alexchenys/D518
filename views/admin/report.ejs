@@ -1,0 +1,48 @@
+<h1>故障紀錄</h1>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script type="text/javascript">
+$('document').ready(function(){
+    $.ajax({
+        url: '/api/report',
+        method: 'GET'
+    })
+    .done(function(msg){
+        $('#info').html('')
+        //$('#info').append('<form action="" menthod="POST">')
+        if(msg.length === 0){
+            $("#but").attr("disabled", true);
+        }
+        for (let i = 0; i < msg.length; i++) {
+            $('#info').append(`<tr>
+                <td><input type="checkbox" name='delete' value="${msg[i].id}"></td></td><td>${msg[i].date}</td><td><a onclick="report(${msg[i].id})"'>${'pc'+msg[i].pcid}</a></td><td>${msg[i].name}</td>
+            </tr>`)
+        }
+        //$('#info').append('</form>')
+    })
+})
+function report(id) {
+    var newWin = window.open('http://127.0.0.1:3000/admin/report/'+id, 'example', 'width=600,height=400');
+}
+</script>
+<form action="/admin/dashboard/delete" method="POST">
+<table border="1" style="width: 80%;">
+    <tr>
+        <td>#</td><td>回報日期</td><td>設備</td><td>回報人</td>
+    </tr>
+   
+    <tbody id="info">
+        <tr>
+        <td><input type="checkbox"></td></td><td>時間</td><td>設備</td><td>回報人</td>
+        </tr>
+    </tbody>
+    
+</table>
+<input id="but" type="submit" value="刪除紀錄">
+</form>
+<h1>故障紀錄填寫</h1>
+<form action="adminreport" method="POST">
+    設備名稱<br><input type="text" name="pcid"><br>
+    <br>
+    設備狀況<br><textarea name="report"></textarea><br>
+    <input type="submit">
+</form>

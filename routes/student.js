@@ -7,11 +7,15 @@ var url = "mongodb://127.0.0.1:27017/lab_system";
 var moment = require('moment');
 var MongoClient = require('mongodb', {useUnifiedTopology: true}).MongoClient;
 const stuSignIn = require('../models/studentApi.js')
+const reportApi = require('../models/report.js')
+
+function getRandomInt(max) {
+    return Math.floor(Math.random() * Math.floor(max));
+}
 
 router.get('/', function(req, res){
     res.render('studentSignin.ejs')
 })
-
 router.post('/',urlencodedParser,function(req, res){
     const sign_in = new stuSignIn({
         _id: new mongoose.Types.ObjectId(),
@@ -22,7 +26,17 @@ router.post('/',urlencodedParser,function(req, res){
         class: req.body.class,
         picd : req.body.pcid_1 + "-" + req.body.pcid_2
     });
-    //console.log(sign_in.stu_id, sign_in.stu_name)
+    if (req.body.report != null) {
+        const report = new reportApi({
+            _id: new mongoose.Types.ObjectId(),
+            id: getRandomInt(100000),
+            date: moment().format('L'),
+            name: req.body.stu_name,
+            pcid : req.body.pcid_1 + "-" + req.body.pcid_2,
+            report: req.body.report
+        })
+        report.save()
+    }
     MongoClient.connect(url, function(err, db) {
         if (err) throw err;
         var dbo = db.db("lab_system");
@@ -43,6 +57,12 @@ router.post('/',urlencodedParser,function(req, res){
     res.render('student/Awesome'); 
 })
 
+router.get('/search', function(req, res){
+    res.render('student/search', {layout: 'layouts/dev_layout'})
+})
+router.post('/search', urlencodedParser, function(req, res){
+    res.render('student/display_result', {layout: 'layouts/dev_layout', stu_id:req.body.stu_id})
+})
 
 
 module.exports = router

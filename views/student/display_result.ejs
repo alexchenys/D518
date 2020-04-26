@@ -1,0 +1,51 @@
+<html>
+<title>實驗室管理系統</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script type="text/javascript">
+$('document').ready(function(){
+    var id = $('#stu_id').text()
+    $.ajax({
+        url: '/api/signin',
+        method: 'GET'
+    })
+    .done(function(msg){
+        const record = msg.filter(function(stu){
+            return stu.stu_id === id.trim()
+
+        })
+        $('#rec').html('')
+        for (let i = 0; i < record.length; i++) {
+            $('#rec').append(`<tr>
+                <th>${record[i].date}</th>
+                <th>${record[i].stu_id}</th>
+                <th>${record[i].stu_name}</th>
+                <th>${record[i].class}</th>
+                <th>${record[i].picd}</th>
+            </tr>`)
+            
+        }
+    })
+})
+</script>
+<body>
+    
+    <div class="w3-container">
+        <h2 id="stu_id"><%= stu_id %></h2>
+        <table class="w3-table-all">
+            <thead>
+            <tr class="w3-green">
+                <th>日期</th>
+                <th>學號</th>
+                <th>姓名</th>
+                <th>課名</th>
+                <th>電腦序號</th>
+            </tr>
+            </thead>
+            <tbody id="rec">
+
+            </tbody>
+        </table>
+    </div>
+</body>

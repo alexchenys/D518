@@ -238,48 +238,15 @@
 				</div>
 			</div>
 			<button id="submit" class="w3-button w3-green" style="margin: 10px;" disabled>簽到</button>
-            <a href="search.php" target="_blank">簽到紀錄查詢</a>
+            <a href="student/search" target="_blank">簽到紀錄查詢</a>
 		</form>
 	</div>
 </body>
     
 <script type="text/javascript">
-    	key=new Array(3);
-		key[0]=new Array(3);
-		key[1]=new Array(2);
-		key[2]=new Array(3);
-		key[3]=new Array(3);
-		key[4]=new Array(3);
-		key[5]=new Array(3);
+    	
 
-		key[1][0]="電腦網路概論";
-		key[1][1]="行動裝置程式設計";
-		key[1][2]="資訊安全證照";
-
-		key[2][0]="網路安全實務";
-		key[2][1]="Network+網路國際證照";
-		key[2][2]="電腦網路實驗";
-		key[2][3]="資料庫程式設計";
-
-		key[3][0]="程式設計";
-		key[3][1]="行動裝置程式設計";
-
-		key[4][0]="資訊系統安全認證";
-		key[4][1]="CEH資安國際證照";
-		key[4][2]="物件導向程式設計";
-
-		key[5][0]="程式設計與應用(二)";
-		key[5][1]="物件導向程式設計";
-		key[5][2]="後端網頁程式設計";
-
-		function Buildkey(num)
-		{
-			document.myForm.class.selectedIndex=0;
-			for(ctr=0;ctr<key[num].length;ctr++){
-				document.myForm.class.options[ctr]=new Option(key[num][ctr],key[num][ctr]);
-			}
-			document.myForm.class.length=key[num].length;
-		}
-	</script>
+	
+</script>
 	
 </html>

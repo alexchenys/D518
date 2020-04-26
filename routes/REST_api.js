@@ -6,6 +6,7 @@ const studentList = require('../models/studentList')
 const studentApi = require('../models/studentApi')
 const newsApi = require('../models/new')
 const mylog = require('../models/log')
+const reportApi = require('../models/report')
 var MongoClient = require('mongodb').MongoClient;
 var url = "mongodb://127.0.0.1:27017/lab_system";
 router.get('/', function(req, res){
@@ -71,6 +72,16 @@ router.get("/teacher", (req, res) => {
 
 router.get('/new', function(req, res){
     newsApi.find().exec()
+    .then(function(myList){
+        res.status(200).json(myList)
+    })
+    .catch(function(err){
+        res.status(500).json({error: err})
+    })
+})
+
+router.get('/report', function(req, res){
+    reportApi.find().exec()
     .then(function(myList){
         res.status(200).json(myList)
     })

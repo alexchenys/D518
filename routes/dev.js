@@ -7,6 +7,19 @@ const fs = require('fs')
 const iconv = require('iconv-lite');
 var xlsx2json = require("node-xlsx");
 var sys = require('sys');
+const passport = require('passport')
+const POP3Strategy = require('passport-pop3')
+passport.use(new POP3Strategy({
+    host: 'mail.uch.edu.tw',
+    port: 110,
+    enabletls: false,
+    usernameField: 'email',
+    passwordField: 'passwd',
+  }
+));
+
+
+
 //var node_fs = require('node-fs');
 const { exec } = require("child_process");
 var date=new Date().getDate();
@@ -92,4 +105,15 @@ router.get('/backup', async function(req, res){
         console.log('Dump taken on '+ year+'-'+month+'-'+date)
     })
 })
+router.get('/pop3', function(req, res){
+    res.render('dev/pop3',{layout: 'layouts/dev_layout.ejs'})
+})
+router.post('/login', function(req, res, next){
+    passport.authenticate('pop3', function(err, user, info){
+        if (err) return res.status(500).send('Internal Server Error')
+        if (!user) return res.status(400).send('Bad Request')
+        return res.status(200).send('OK')
+    })(req, res, next)
+})
+
 module.exports = router

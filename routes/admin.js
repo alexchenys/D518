@@ -11,6 +11,7 @@ const studentList = require('../models/studentList.js')
 const news = require('../models/new.js');
 const studentApi = require('../models/studentApi')
 const mylog = require('../models/log')
+const reportApi = require('../models/report.js')
 var sys = require('sys');
 const { exec } = require("child_process");
 var date=new Date().getDate();
@@ -173,4 +174,41 @@ router.post('/backup', function(req, res){
     })
     res.redirect('dashboard/backup')
 })
+router.get('/dashboard/report', function(req, res){
+    res.render('admin/report', {layout: 'layouts/admin_layout.ejs'})
+})
+router.post('/dashboard/adminreport',urlencodedParser, function(req, res){
+    const report = new reportApi({
+        _id: new mongoose.Types.ObjectId(),
+        id: getRandomInt(100000),
+        date: moment().format('L'),
+        name: 'admin',
+        pcid : req.body.pcid,
+        report: req.body.report
+    })
+    report.save()
+    res.redirect('report')
+})
+router.get('/report/:id', function(req, res){
+    reportApi.find({id:req.params.id}).exec()
+    .then(function(myList){
+        res.render('admin/device',{layout:'layouts/dev_layout', data: myList})
+    })  
+
+})
+router.post('/dashboard/delete', urlencodedParser, function(req, res){
+    var delete_list = req.body.delete
+
+    console.log("dele: " + delete_list)
+    if(typeof delete_list === "string"){
+        reportApi.remove({id: delete_list}).exec()
+    } else {
+        for (let i = 0; i < delete_list.length; i++) {
+            reportApi.deleteOne({id: delete_list[i]}).exec()
+        }
+    }
+    //res.send('aaa')
+    res.redirect('report')
+})
+
 module.exports = router

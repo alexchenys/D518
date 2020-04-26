@@ -1,0 +1,157 @@
+
+<!--<link rel="stylesheet" type="text/css" href="vertical_tab.css">-->
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<style>
+
+</style>
+<script type="text/javascript">
+$('document').ready(function(){
+    $('button').click(function(){
+        var course_id =  $(this).attr("value");
+        $.ajax({
+            url: '/api/signin',
+            method: 'GET'
+        })
+        .done(function(msg){
+            const stu_List = msg.filter(function(person){
+                return person.class === course_id
+            })
+            var listFilter = Object.values(stu_List).map(item => item.date)
+            var uniqeList = [...new Set(listFilter)]
+            $('#date').html(`<option value="" disabled selected>Choose date</option>`)
+            for (let i = 0; i < uniqeList.length; i++) {
+                $('#date').append(`<option value="${uniqeList[i]}">${uniqeList[i]}</option>`)
+            }
+            $('#myform').show()
+            $('#date').change(function(){
+                var day = $('#date').val()
+                console.log(day)
+                $.ajax({
+                    url: '/api/studentList',
+                    method: 'GET'
+                })
+                .done(function(msg){
+                    const classJoin = msg.filter(function(student){
+                        return student.classID === course_id
+                    })
+                    const presentStudent = stu_List.filter(function(time){
+                        return time.date === day
+                    })
+                    $('#courseName').text("課程名稱: "+course_id)
+                    $('#enroll').text("選課人數: "+classJoin.length)
+                    $('#present').html('')
+                    for (let i = 0; i < presentStudent.length; i++) {
+                        $('#present').append(`
+                        <tr>
+                            <th>${presentStudent[i].stu_name}</th>
+                            <th>${presentStudent[i].stu_id}</th>
+                            <th>${presentStudent[i].picd}</th>
+                        </tr>`)
+                        
+                    }
+                    for (let i = 0; i < classJoin.length; i++) {
+                        for (let j = 0; j < presentStudent.length; j++) {
+                            //console.log(list[i].stu_id + ':' + attend[j].stu_id)
+                            if (classJoin[i].stu_id === presentStudent[j].stu_id) {
+                                classJoin.splice(i,1,{})
+                                break;
+                            }
+                        }
+                    }
+                    console.log(classJoin)
+                    for(var k=0; k<classJoin.length; k++){
+                        var size = Object.keys(classJoin[k]).length;
+                        if (size === 0) {
+                            continue
+                        }
+                        $('#absent').append("<tr>\
+                                <td>"+ classJoin[k].stu_name +"</td>\
+                                <td>"+ classJoin[k].stu_id+"</td>\
+                                </tr>")
+                    }
+                    $('#info2').show()
+                    $('#namelist').show()
+                })
+            })
+        })
+        
+    })
+    
+})
+</script>
+<div class="w3-main">
+    <header class="w3-container" style="padding-top:22px">
+        <h5><b><i class="icon-dashboard"></i> My Course</b></h5>
+    </header>
+    <div class="w3-row-padding w3-margin-bottom">
+        <% for(var i=0; i<Data.course.length; i++) {%>
+        <div class='w3-quarter'>
+            <button id="course_id" name='course_id' value="<%= Data.course[i][0] %>" type='submit' style='width: 100%' class='w3-container w3-brown w3-button w3-padding-16 '>
+                <div class='w3-left'><i class='fas fa-user-graduate w3-xxxlarge'></i></div>
+                <div class='w3-right'>
+                <!--右邊數字-->
+                </div>
+                <div class='w3-clear'></div>
+                <h4><%= Data.course[i] %></h4>
+            </button>
+        </div>
+        <% } %>
+    </div>
+    
+    <div class="w3-container">
+        <form id="myform" style="display: none;" method="post" class="w3-container" target="_blank" action="attend.php">
+            <h1>選擇查詢日期</h1>
+            <select id="date" class="w3-select w3-container" style="padding: 10px;" name="date">
+                <option value="" disabled selected>Choose date</option>
+            </select>
+            <p></p>
+        </form>
+    </div>
+    <div id="info2" style="display: none;" class="w3-card-4 w3-margin">
+        <header class="w3-container w3-blue">
+            <h3>Info Card</h3>
+        </header>
+        <div class="w3-container">
+            <h3 id="courseName"></h3>
+            <h3 id="enroll"></h3>
+        </div>
+    </div>
+    <div class="w3-margin w3-row" style="display: none;" id="namelist">
+        <div class="w3-col l6">
+            <header class="w3-container w3-blue w3-margin-right">
+                <h3>出席名單</h3>
+            </header>
+            <div class="w3-margin-top w3-margin-right">
+                <table class="w3-table-all">
+                    <tr class="w3-green">
+                        <th>姓名</th>
+                        <th>學號</th>
+                        <th>電腦序號</th>
+                    </tr>
+                    <tbody id="present">
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="w3-col l6">
+            <header class="w3-container w3-blue w3-margin-left">
+                <h3>缺席名單</h3>
+            </header>
+            <div class="w3-margin-top w3-margin-left">
+                <table class="w3-table-all">
+                    <tr class="w3-green">
+                        <th>姓名</th>
+                        <th>學號</th>
+                    </tr>
+                    <tbody id="absent">
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+    </div>
+</div>
+

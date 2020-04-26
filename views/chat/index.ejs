@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-tw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Chatroom</title>
+    <p id="username"><%=user%></p>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <style>
+        body {
+          margin: 0 auto;
+          max-width: 800px;
+          padding: 0 20px;
+        }
+        
+        .container {
+          border: 2px solid #dedede;
+          background-color: #f1f1f1;
+          border-radius: 5px;
+          padding: 10px;
+          margin: 10px 0;
+        }
+        
+        .darker {
+          border-color: #ccc;
+          background-color: #ddd;
+        }
+        
+        .container::after {
+          content: "";
+          clear: both;
+          display: table;
+        }
+        
+        .container img {
+          float: left;
+          max-width: 60px;
+          width: 100%;
+          margin-right: 20px;
+          border-radius: 50%;
+        }
+        
+        .container img.right {
+          float: right;
+          margin-left: 20px;
+          margin-right:0;
+        }
+        
+        .time-right {
+          float: right;
+          color: #aaa;
+        }
+        
+        .time-left {
+          float: left;
+          color: #999;
+        }
+    </style>
+
+    <script>
+        var username = $('#username').text()
+        $(function(){
+            var socket = io('/chat')
+            $('form').submit(function(e){
+               e.preventDefault()
+               socket.emit('chat', username + '/' + $('#text').val());
+               $('#text').val('')
+            })
+            socket.on('chat', function(msg){
+                var text = msg.split('/')
+                console.log(text)
+                if (text[0] === username) {
+                    $('#message').append(`<div class="container darker">
+                        <img src="/image/img_avatar3.png" alt="Avatar" class="right" style="width:100%;">
+                        <p>${text[1]}</p>
+                        <span class="time-left">11:01</span>
+                    </div>`)
+                } else {
+                    $('#message').append(`<div class="container">
+                        <img src="/image/img_avatar3.png" alt="Avatar" style="width:100%;">
+                        <p>${text[1]}</p>
+                        <span class="time-right">11:00</span>
+                    </div>`)
+                }
+            })
+        })
+    </script>
+</head>
+<body>
+    <div id="message" style="position: absolute; top: 25px; width: 90%; margin-bottom: 14%;">
+        
+    </div>
+    <form action="" style="position: fixed; bottom: 0px; width: 93%;">
+        <input  class="w3-input w3-border" type="text" id="text">
+        <button class="w3-button w3-block w3-teal">送出</button>
+    </form>
+    
+</body>
+</html>
+

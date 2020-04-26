@@ -1,0 +1,1 @@
+{"options":{},"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"lab_system.teacher"}],"uuid":"0b2aef32416d458e8b17a70f1dc2f94b"}

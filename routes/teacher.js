@@ -11,7 +11,17 @@ var moment = require('moment');
 const MongoStore = require('connect-mongo')(session);
 const mongoose = require('mongoose')
 const fs = require('fs')
+const passport = require('passport')
+const POP3Strategy = require('passport-pop3')
 
+passport.use(new POP3Strategy({
+    host: 'mail.uch.edu.tw',
+    port: 110,
+    enabletls: false,
+    usernameField: 'email',
+    passwordField: 'passwd',
+  }
+));
 var url = "mongodb://127.0.0.1:27017/lab_system";
 const studentList = require('../models/studentList.js')
 const studentApi = require('../models/studentApi')
@@ -50,12 +60,11 @@ router.get('/', function(req, res){
     res.render('teacherLogin.ejs')
 })
 router.post('/',urlencodedParser, function(req, res){
-    //console.log('name:' + req.body.username);
-    //console.log('password: ' + req.body.password);
+    var user = req.body.email.split('@')
     MongoClient.connect(url, function(err, db, next) {
         if (err) throw err;
         var dbo = db.db("lab_system");
-        dbo.collection("teacher").findOne({'username' : req.body.username }, function(err, result) {
+        dbo.collection("teacher").findOne({'username' : user[0]}, function(err, result) {
             //console.log(result);
             req.session.teacherData = result
             if (err) throw err;
@@ -64,9 +73,16 @@ router.post('/',urlencodedParser, function(req, res){
                 res.redirect('/teacher');
             }
             else{
+                /** 
+                passport.authenticate('pop3', function(err, user, info){
+                    if (err) return res.status(500).send('Internal Server Error')
+                    if (!user) return res.status(400).redirect('/teacher')
+                    return res.status(200).redirect('teacher/dashboard/home')
+                })(req, res, next)*/
+        
                 var username = result.username;
                 var password = result.password;
-                if(req.body.password == result.password){
+                if(req.body.passwd == result.password){
                     console.log('Login successfully')
                     res.redirect('teacher/dashboard/home');
                 }
@@ -74,6 +90,7 @@ router.post('/',urlencodedParser, function(req, res){
                     console.log('Password Incorrect')
                     res.redirect('/teacher');
                 }
+            
             }
             db.close();
             //res.render('view', { layout: 'teacher_dashboard' });
@@ -92,6 +109,10 @@ router.get('/dashboard/rol', function(req, res){
 router.get('/dashboard/student_manage', function(req, res){
     var teacherData = req.session.teacherData;
     res.render('teacher/student_manage.ejs', {layout: 'layouts/teacher_dashboard.ejs', Data: teacherData})
+})
+router.get('/dashboard/student_attend', function(req, res){
+    var teacherData = req.session.teacherData;
+    res.render('teacher/student_attend.ejs', {layout: 'layouts/teacher_dashboard.ejs', Data: teacherData})
 })
 router.post('/dashboard/add', function(req, res){
     const student_List = new studentList({

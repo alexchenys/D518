@@ -114,7 +114,7 @@
                 <i class="fa fa-caret-down"></i>
             </button>
             <div class="dropdown-container">
-                <a href="#">損壞設備填寫</a>
+                <a href="report">損壞設備填寫</a>
                 <!--<a href="#">紀錄表</a>-->
                 <a href="record_search">列印，查詢簽到記錄</a>
             </div>
@@ -122,6 +122,7 @@
                 <i class="fa fa-caret-down"></i>
             </button>
             <div class="dropdown-container">
+                <a onclick="popUp()">聊天功能</a>
                 <a href="log">Log 查詢</a>
                 <a href="backup">系統備份</a>
                 <a href="new">公佈欄</a>
@@ -141,11 +142,15 @@
                 this.classList.toggle("active");
                 var dropdownContent = this.nextElementSibling;
                 if (dropdownContent.style.display === "block") {
-                dropdownContent.style.display = "none";
+                    dropdownContent.style.display = "none";
                 } else {
-                dropdownContent.style.display = "block";
+                    dropdownContent.style.display = "block";
                 }
                 });
+            }
+
+            function popUp() {
+                var newWin = window.open('http://127.0.0.1:3000/chat?username=admin', 'example', 'width=600,height=400');
             }
         </script>
     </div>

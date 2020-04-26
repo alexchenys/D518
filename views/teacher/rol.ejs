@@ -8,6 +8,7 @@
     <script src="https://momentjs.com/downloads/moment.js"></script>
     <script>
     $(document).ready(function(){
+        var timer = null
         $('#infoCard').hide()
         $('#id1').hide()
         $("button").click(function(){
@@ -29,14 +30,13 @@
                 const endTime = moment(courseInfo[0].time2, format)
                 const currentTime = moment('13:05:00',format)
                 //const currentTime = moment()
-        
+                
                 if (courseDay === day) {
-                    console.log('trigger')
                     if (currentTime.isBetween(startTime, endTime)) {
-                        setInterval(Seating(1), 1000)
+                        startInterval()
                     }
                 } else {
-                    Seating(0)
+                    stopInterval()
                     $('#infoCard').hide('')
                     $('#id1').hide('')
                     $('#div1').html('<h1 style="margin-left:10%">非上課時間</h1>')
@@ -47,13 +47,17 @@
 
 
         $('#div1').html('')
+        function startInterval(){
+            timer = setInterval(Seating, 1000)
+        }
+        function stopInterval() {
+            // To cancel an interval, pass the timer to clearInterval()
+            clearInterval(timer);
+        }
         function update() {
             $('#clock').html(moment().format('D. MMMM YYYY H:mm:ss'));
         }
-        function Seating(node){
-            if (node === 0) {
-                return
-            }
+        function Seating(){
             $.ajax({
                 url: "/api/signin",
                 method: 'GET'
@@ -101,15 +105,13 @@
                 .done(function(msg){
                     const list = msg.filter(function(person){
                         return person.classID === course_id
-                    })              
-                    var people = list.length;
-                   
+                    })    
+                    //console.log(attend.length)
+                    var people = list.length;    
                     for (let i = 0; i < list.length; i++) {
-                      
                         for (let j = 0; j < attend.length; j++) {
                             //console.log(list[i].stu_id + ':' + attend[j].stu_id)
                             if (list[i].stu_id === attend[j].stu_id) {
-                                
                                 list.splice(i,1,{})
                                 break;
                             }
@@ -123,10 +125,11 @@
                                         實到:"+attend.length +"員</h4>")
 
                     $('#absent').html('')
-                    for(let k=0; k<list.length; k++){
+                    
+                    for(var k=0; k<list.length; k++){
                         var size = Object.keys(list[k]).length;
                         if (size === 0) {
-                            break
+                            continue
                         }
                         $('#absent').append("<tr>\
                                 <td>"+ (k + 1) +"</td>\
