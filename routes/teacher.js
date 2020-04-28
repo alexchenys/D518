@@ -1,5 +1,8 @@
-const express = require('express')
-const router = express.Router()
+//const express = require('express')
+const feathers = require('@feathersjs/feathers');
+const express = require('@feathersjs/express');
+const socketio = require('@feathersjs/socketio');
+const router = express.Router(feathers())
 const bodyParser = require('body-parser')
 const path = require('path')
 var multer = require('multer')
@@ -232,5 +235,9 @@ router.post('/dashboard/print',urlencodedParser,function(req, res){
         res.render('teacher/print', {layout: 'layouts/dev_layout', list:myList, id:courseId, date:mydate})
     })
     
+})
+router.get('/dashboard/board', function(req, res){
+    var teacherData = req.session.teacherData;
+    res.render('teacher/social', {layout: 'layouts/teacher_dashboard.ejs', Data: teacherData})
 })
 module.exports = router

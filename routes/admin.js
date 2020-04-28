@@ -210,5 +210,7 @@ router.post('/dashboard/delete', urlencodedParser, function(req, res){
     //res.send('aaa')
     res.redirect('report')
 })
-
+router.get('/dashboard/board', function(req, res){
+    res.render('admin/social', {layout: 'layouts/admin_layout.ejs'})
+})
 module.exports = router

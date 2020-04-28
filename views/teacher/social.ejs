@@ -1,0 +1,112 @@
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue-grey.css">
+<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Open+Sans'>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<style>
+html, body, h1, h2, h3, h4, h5 {font-family: "Open Sans", sans-serif}
+</style>
+<script>
+</script>
+<div class="w3-row-padding">
+    <div class="w3-col m12">
+        <div class="w3-card w3-round w3-white w3-margin-top">
+            <div class="w3-container w3-padding" >
+            <form action="" onsubmit="sendMessage(event.preventDefault())">
+                <input class="w3-input w3-border" type="text" id="message-text">
+                <p></p>
+                <button type="submit" class="w3-button w3-theme"><i class="fa fa-pencil"></i>  Post</button> 
+            </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="main">
+    
+</div>
+<script src="//unpkg.com/@feathersjs/client@^4.3.0/dist/feathers.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+<script src="https://momentjs.com/downloads/moment.js"></script>
+<script type="text/javascript">
+    // Set up socket.io
+    const socket = io('http://localhost:3000');
+    // Initialize a Feathers app
+    const app = feathers();
+    // Register socket.io to talk to our server
+    app.configure(feathers.socketio(socket));
+    // Form submission handler that sends a new message
+    async function sendMessage () {
+        const messageInput = document.getElementById('message-text');
+        const name = document.getElementById('username').textContent
+        // Create a new message with the input field value
+        await app.service('messages').create({
+            text: messageInput.value,
+            time: moment().format('lll'),
+            name: name
+        });
+        messageInput.value = '';
+    }
+    async function replyMessage(id){
+        event.preventDefault()
+        const replyInput = document.getElementById('reply-text'+id)
+        const name = document.getElementById('username').textContent
+        const to = document.getElementById('to'+id).textContent
+        await app.service('reply').create({
+            text: replyInput.value,
+            time: moment().format('lll'),
+            name: name,
+            to: to
+        })
+        replyInput.value = ''
+    }
+    // Renders a single message on the page
+    function addMessage (message) {
+        $('#main').prepend(`
+        <div class="w3-container w3-card w3-white  w3-margin"><br>          
+            <span class="w3-right w3-opacity">1 min</span>
+            <h4 id=${'name-'+message.id}>${message.name}</h4><br>
+            <p id="${'myname'+message.id}" style='display:none'><%=Data.name%></p>
+            <p>${message.text}</p>
+            <p id="${'to'+message.id}" style='display:none'>${message.id}</p>
+            <hr class="w3-clear">
+            <button type="button" class="w3-button w3-theme-d1 w3-margin-bottom"><i class="fa fa-thumbs-up"></i>  Like</button> 
+            <button onclick="Toggle(${message.id})" id=${'reply-'+message.id} type="button" class="w3-button w3-theme-d2 w3-margin-bottom"><i class="fa fa-comment"></i>  Comment</button>
+            <hr id="line" >
+            <div id=${'replyArea-'+message.id} style="display: none;">
+            </div>
+            <form action="" onsubmit="replyMessage(${message.id})">
+            <div id=${'replyInput-'+message.id} style="display: none;" >
+                <input id='${'reply-text'+message.id}' class="w3-input w3-border  w3-round" type="text">
+                <p></p>
+            </div>
+            </form>
+        </div>
+        
+        `)
+    }
+    function Toggle(id){
+        console.log(id)
+        $('#replyArea-' + id).toggle()
+        $('#replyInput-' + id).toggle()
+    }
+
+    function addReply (reply) {
+        $(`#${'replyArea-' + reply.to}`).prepend(`<div class='w3-container w3-margin w3-padding w3-round' style="background-color: lightgray;"><strong>${reply.name}: </strong>${reply.text}</div>`)
+    }
+    const main = async () => {
+        // Find all existing messages
+        const messages = await app.service('messages').find();
+        const replys = await app.service('reply').find();
+        console.log(replys)
+        // Add existing messages to the list
+        messages.forEach(addMessage);
+        replys.forEach(addReply);
+        // Add any newly created message to the list in real-time
+        app.service('messages').on('created', addMessage);
+        app.service('reply').on('created', addReply);
+    };
+
+    main();
+</script>
+
+
