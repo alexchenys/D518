@@ -22,6 +22,7 @@
 <body class="w3-light-grey">
 	<div class="w3-bar w3-top w3-black w3-large" style="z-index:4">
 		<button class="w3-bar-item w3-button w3-hide-large w3-hover-none w3-hover-text-light-grey" onclick="w3_open();"><i class="fa fa-bars"></i>  Menu</button>
+		<span class="w3-bar-item w3-right"><a href="/teacher/logout">登出</a></span>
 		<span class="w3-bar-item w3-right"><a href="/teacher/dashboard/home">Dashboard</a></span>
 		<!--<span class="w3-bar-item w3-right"><a href="">HOME</a></span>-->
 	</div>
@@ -50,6 +51,9 @@
 			<a href="board" style="font-size: 16px;" class="w3-bar-item w3-button w3-padding"><i class="fas fa-comment fa-fw"></i>  留言板</a>
 			<a href="record" style="font-size: 16px;" class="w3-bar-item w3-button w3-padding"><i class="fa fa-history fa-fw"></i>  歷次簽到紀錄</a>
 			<a href="fqa" style="font-size: 16px;" class="w3-bar-item w3-button w3-padding"><i class="fas fa-question-circle fa-fw"></i></i>  常見問題</a>
+			<% if (Data.super === true){%>
+				<a href="admin" style="font-size: 16px;" class="w3-bar-item w3-button w3-padding"><i class="fas fa-users-cog fa-fw"></i></i>  指定管理員</a>
+			<% } %>
 		</div>
 	</nav>
 	<!-- Overlay effect when opening sidebar on small screens -->

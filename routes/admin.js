@@ -5,6 +5,8 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false });
 const mongoose = require('mongoose')
 var MongoClient = require('mongodb').MongoClient;
 var moment = require('moment');
+const passport = require('passport')
+const POP3Strategy = require('passport-pop3')
 var url = "mongodb://127.0.0.1:27017/lab_system";
 const classInfo = require('../models/classInfo.js')
 const studentList = require('../models/studentList.js')
@@ -12,8 +14,26 @@ const news = require('../models/new.js');
 const studentApi = require('../models/studentApi')
 const mylog = require('../models/log')
 const reportApi = require('../models/report.js')
+const adminAccount = require('../models/admin')
+var session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
 var sys = require('sys');
 const { exec } = require("child_process");
+
+passport.use(new POP3Strategy({
+        host: 'mail.uch.edu.tw',
+        port: 110,
+        enabletls: false,
+        usernameField: 'email',
+        passwordField: 'passwd',
+    }
+));
+router.use(session({
+    secret: '1234',
+    store: new MongoStore({url:'mongodb://localhost:27017/sessiondb'}),
+    cookie: {maxAge: 600 * 100000}                       
+}))
+
 var date=new Date().getDate();
 var month=new Date().getMonth();
 var year=new Date().getFullYear();
@@ -21,38 +41,69 @@ var output='./public/backup/';
 function getRandomInt(max) {
     return Math.floor(Math.random() * Math.floor(max));
 }
-
+router.use(function(req, res, next) {
+    res.set('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
+    next();
+});
 router.get('/',function(req, res){
-    res.render('admin/login',{layout: 'layouts/dev_layout.ejs'})
+    var adminData = req.session.adminData;
+    res.render('admin/login',{layout: 'layouts/dev_layout.ejs',Data: adminData})
+})
+router.get('/logout', function(req, res){
+    delete req.session.adminData;
+    return res.redirect('/');
 })
 router.post('/', urlencodedParser, function(req, res){
+    var username = req.body.email.split('@')
     const log = new mylog({
         _id: new mongoose.Types.ObjectId(),
         date: moment().format('L'),
         time: moment().format('LTS'),
-        username: req.body.username,
+        username: username[0],
         ip: req.connection.remoteAddress,
         status: 'success',
     })
-    if (req.body.username === 'admin' && req.body.password === '123') {
-        console.log('trigger')
-        log.save().catch(err=>console.log(err))
-        res.redirect('admin/dashboard/home')
-    } else {
-        const logF = new mylog({
-            _id: new mongoose.Types.ObjectId(),
-            date: moment().format('L'),
-            time: moment().format('LTS'),
-            username: req.body.username,
-            ip: req.connection.remoteAddress,
-            status: 'fault',
-        })
-        logF.save().catch(err=>console.log(err))
-        res.redirect('admin')
-    }
+    const logF = new mylog({
+        _id: new mongoose.Types.ObjectId(),
+        date: moment().format('L'),
+        time: moment().format('LTS'),
+        username: username[0],
+        ip: req.connection.remoteAddress,
+        status: 'fault',
+    })
+    
+    adminAccount.findOne({sid: username[0]}).exec()
+    .then(function(doc){
+        req.session.adminData = doc
+        console.log(req.session.adminData)
+        if (doc === null) {
+            res.redirect('admin')
+        } else {
+            passport.authenticate('pop3', function(err, user, info){
+                if (err){
+                    logF.save().catch(err=>console.log(err))
+                    res.redirect('admin')
+                }
+                if (!user){
+                    logF.save().catch(err=>console.log(err))
+                    res.redirect('admin')
+                }
+                else { 
+                    log.save().catch(err=>console.log(err))
+                    res.status(200).redirect('admin/dashboard/home')
+                }
+            })(req, res)
+        }
+    })
 })
 router.get('/dashboard/home', function(req, res){
-    res.render('admin/index',{layout: 'layouts/admin_layout.ejs'})
+    var adminData = req.session.adminData;
+    if (adminData === undefined) {
+        console.log('asdasd')
+        res.redirect('/')
+    } else {
+        res.render('admin/index',{layout: 'layouts/admin_layout.ejs'})
+    }
 })
 router.get('/dashboard/info', function(req, res){
     res.render('admin/info',{layout: 'layouts/admin_layout.ejs'})
@@ -62,16 +113,15 @@ router.post('/dashboard/info', function(req, res){
     var id = req.body.id
     var classList = []
     var className =  Object.values(req.body)
-    console.log(className)
+
     for (let i = 2, k = 0; i < className.length; i=i+2, k++) {
         classList[k] = [className[i], className[i+1]]
     }
-    console.log(classList)
 
     MongoClient.connect(url, function(err, db) {
         if (err) throw err;
         var dbo = db.db("lab_system");
-        var myobj = { username: id, password: "111", name: name, course: classList};
+        var myobj = { username: id, password: "111", name: name, course: classList, super: false};
         dbo.collection("teacher").insertOne(myobj, function(err, res) {
             if (err) throw err;
             console.log("1 document inserted");
@@ -79,6 +129,35 @@ router.post('/dashboard/info', function(req, res){
         });
       });
       res.redirect('info')
+})
+router.post('/dashboard/deleteInfo',urlencodedParser, function(req, res){
+    var delete_list = req.body.delete
+    if (typeof delete_list === "string") {
+        MongoClient.connect(url, function(err, db) {
+            if (err) throw err;
+            var dbo = db.db("lab_system");
+            var myquery = { username: delete_list };
+            dbo.collection("teacher").deleteOne(myquery, function(err, obj) {
+                if (err) throw err;
+                console.log("1 document deleted");
+                db.close();
+            }); 
+        });
+    }else {
+        MongoClient.connect(url, function(err, db) {
+            if (err) throw err;
+            var dbo = db.db("lab_system");
+            for (let i = 0; i < delete_list.length; i++) {
+                var myquery = { username: delete_list[i] };
+                dbo.collection("teacher").deleteOne(myquery, function(err, obj) {
+                    if (err) throw err;
+                    console.log("1 document deleted");
+                    db.close();
+                }); 
+            }
+        });
+    }
+    res.redirect('info')
 })
 router.get('/dashboard/classinfo', function(req, res){
     MongoClient.connect(url, function(err, db) {
@@ -93,7 +172,6 @@ router.get('/dashboard/classinfo', function(req, res){
     });
 })
 router.post('/studentList', urlencodedParser, function(req, res){
-    console.log('trigger studentList');
     const student_List = new studentList({
         _id: new mongoose.Types.ObjectId(),
         classID: 'CS0337',
@@ -106,8 +184,6 @@ router.post('/studentList', urlencodedParser, function(req, res){
     student_List.save().catch(err => console.log(err))
 })
 router.post('/addinfo',urlencodedParser, function(req, res){
-    
-    console.log(req.body.class2);
     const class_info = new classInfo({
         _id: new mongoose.Types.ObjectId(),
         classId: req.body.classId,
@@ -144,7 +220,6 @@ router.post('/new', function(req, res){
     res.redirect('dashboard/new')
 })
 router.post('/dashboard/del', function(req, res){
-    console.log('trigger')
     news.remove({id:req.body.del}).exec()
     res.render('admin/new',{layout: 'layouts/admin_layout.ejs'})
 })
@@ -156,20 +231,17 @@ router.post('/dashboard/record', function(req, res){
     var mydate =  req.body.date
     studentApi.find({class:courseId, date:mydate}).exec()
     .then(function(myList){
-        //console.log(myList);
         res.render('admin/print', {layout: 'layouts/dev_layout', list:myList, id:courseId, date:mydate})
     })
 })
 router.get('/dashboard/log', function(req, res){
     res.render('admin/log', {layout: 'layouts/admin_layout.ejs'})
-    //console.log(req.connection.remoteAddress)
 })
 router.get('/dashboard/backup', function(req, res){
     res.render('admin/backup', {layout: 'layouts/admin_layout.ejs'})
 })
 router.post('/backup', function(req, res){
     exec('mongodump --db lab_system --out '+output+year + '-' + month + '-' + date, function (err, res) {
-        //console.log(res)
         console.log('Dump taken on '+ year+'-'+month+'-'+date)
     })
     res.redirect('dashboard/backup')
@@ -199,7 +271,6 @@ router.get('/report/:id', function(req, res){
 router.post('/dashboard/delete', urlencodedParser, function(req, res){
     var delete_list = req.body.delete
 
-    console.log("dele: " + delete_list)
     if(typeof delete_list === "string"){
         reportApi.remove({id: delete_list}).exec()
     } else {

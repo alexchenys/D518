@@ -28,6 +28,8 @@ passport.use(new POP3Strategy({
 var url = "mongodb://127.0.0.1:27017/lab_system";
 const studentList = require('../models/studentList.js')
 const studentApi = require('../models/studentApi')
+const mylog = require('../models/log')
+const adminAccount = require('../models/admin')
 const storage = multer.diskStorage({
     destination: './public/uploads/',
     filename: function(req, file, cb){
@@ -52,7 +54,10 @@ const uploads = multer({
         }
     }
 }).single('myFile')
-
+router.use(function(req, res, next) {
+    res.set('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
+    next();
+});
 router.use(session({
     secret: '1234',
     store: new MongoStore({url:'mongodb://localhost:27017/sessiondb'}),
@@ -86,10 +91,29 @@ router.post('/',urlencodedParser, function(req, res){
                 var username = result.username;
                 var password = result.password;
                 if(req.body.passwd == result.password){
+                    const log = new mylog({
+                        _id: new mongoose.Types.ObjectId(),
+                        date: moment().format('L'),
+                        time: moment().format('LTS'),
+                        username: username,
+                        ip: req.connection.remoteAddress,
+                        status: 'success',
+                    })
+                    log.save().catch(err=>console.log(err))
                     console.log('Login successfully')
                     res.redirect('teacher/dashboard/home');
+                    
                 }
                 else{
+                    const log = new mylog({
+                        _id: new mongoose.Types.ObjectId(),
+                        date: moment().format('L'),
+                        time: moment().format('LTS'),
+                        username: username,
+                        ip: req.connection.remoteAddress,
+                        status: 'fault',
+                    })
+                    log.save().catch(err=>console.log(err))
                     console.log('Password Incorrect')
                     res.redirect('/teacher');
                 }
@@ -103,6 +127,10 @@ router.post('/',urlencodedParser, function(req, res){
 router.get('/dashboard/home', function(req, res){
     var teacherData = req.session.teacherData;
     res.render('teacher/teacher_home.ejs', {layout: 'layouts/teacher_dashboard.ejs', Data: teacherData})
+})
+router.get('/logout', function(req, res){
+    delete req.session.teacherData;
+    res.redirect('/')
 })
 router.get('/dashboard/rol', function(req, res){
     var teacherData = req.session.teacherData;
@@ -126,12 +154,6 @@ router.post('/dashboard/add', function(req, res){
         stu_id: req.body.stu_id,
         stu_name: req.body.stu_name
     })
-    console.log(req.body.stu_major);
-    console.log(req.body.grade);
-    console.log(req.body.stu_id);
-    console.log(req.body.stu_name);
-    console.log(req.body.classID);
-
     student_List.save().catch(err => console.log(err))
     res.redirect("student_manage");
 })
@@ -240,4 +262,29 @@ router.get('/dashboard/board', function(req, res){
     var teacherData = req.session.teacherData;
     res.render('teacher/social', {layout: 'layouts/teacher_dashboard.ejs', Data: teacherData})
 })
-module.exports = router
+router.get('/dashboard/admin', function(req, res){
+    var teacherData = req.session.teacherData;
+    res.render('teacher/admin', {layout: 'layouts/teacher_dashboard.ejs', Data: teacherData})
+})
+router.post('/dashboard/admin', urlencodedParser, function(req, res){
+    const adminName = new adminAccount({
+        _id: new mongoose.Types.ObjectId(),
+        sid: req.body.adminId,
+        name: req.body.adminName
+    })
+    adminName.save().catch(err => console.log(err))
+    res.redirect("admin");
+})
+router.post('/dashboard/deleteAdmin', urlencodedParser, function(req, res){
+    var delete_list = req.body.delete
+    if(typeof delete_list === "string"){
+        adminAccount.remove({sid: delete_list}).exec()
+    } else {
+        for (let i = 0; i < delete_list.length; i++) {
+            adminAccount.deleteOne({sid: delete_list[i]}).exec()
+        }
+    }
+    //res.send('aaa')
+    res.redirect('admin')
+})
+module.exports = router 

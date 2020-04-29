@@ -267,25 +267,13 @@
 		$('[data-toggle="tooltip"]').tooltip();
 	
 		// Select/Deselect checkboxes
-		var checkbox = $('table tbody input[type="checkbox"]');
 		$("#selectAll").click(function(){
-			
-			if(this.checked){
-				checkbox.each(function(){
-					this.checked = true;                        
-				});
-			} else{
-				checkbox.each(function(){
-					this.checked = false;                        
-				});
-			} 
-		});
-		checkbox.click(function(){
-			console
-			if(!this.checked){
-				$("#selectAll").prop("checked", false);
+			if($("#selectAll").prop("checked")){//如果全選按鈕有被選擇的話（被選擇是true）
+				$("input[name='delete_list']").prop("checked",true);//把所有的核取方框的property都變成勾選
+			}else{
+				$("input[name='delete_list']").prop("checked",false);//把所有的核取方框的property都取消勾選
 			}
-		});
+		})
 	});
 </script>
 </head>

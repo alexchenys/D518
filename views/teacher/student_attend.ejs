@@ -9,6 +9,8 @@
 $('document').ready(function(){
     $('button').click(function(){
         var course_id =  $(this).attr("value");
+        $('#namelist').hide()
+        $('#info2').hide()
         $.ajax({
             url: '/api/signin',
             method: 'GET'

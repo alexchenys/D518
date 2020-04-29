@@ -1,0 +1,56 @@
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $.ajax({
+            url: '/api/admin',
+            method: 'GET'
+        })
+        .done(function(msg){
+            console.log(msg)
+            $('#admin_list').html('')
+            for (let i = 0; i < msg.length; i++) {
+                $('#admin_list').append(`
+                <tr class="w3-hover-text-green">
+                    <td><input type="checkbox" name="delete" value=${msg[i].sid}></td>
+                    <td>${msg[i].name}</td>
+                    <td>${msg[i].sid}</td>
+                </tr>`)
+            }
+           
+        })
+    })
+</script>
+<div class="w3-container">
+    <div class="w3-container ">
+        <h2>管理員資訊</h2>
+    </div>
+    <form action="deleteAdmin" method="POST">
+    <table class="w3-table-all w3-container" >
+        <thead>
+            <tr class="w3-green">
+                <th>#</th>
+                <th>管理員姓名</th>
+                <th>管理員id</th>
+            </tr>
+        </thead>
+        <tbody id="admin_list">
+        </tbody>
+    </table>
+    <input id="but" class="w3-button w3-green w3-margin" type="submit" value="刪除管理員帳戶">
+    </form>
+    <div class="w3-container ">
+        <h2>輸入管理員資訊</h2>
+    </div>
+    <form class="w3-container" method="POST" action="admin">
+        <p>
+        <p>
+        <label>姓名</label>
+        <input class="w3-input" type="text" name="adminName"></p>
+        <p>
+        <label>學號</label>
+        <input class="w3-input" type="text" name="adminId"></p>
+        <input type="submit" class="w3-button w3-green" value="確認">
+    </form>
+      
+</div>
